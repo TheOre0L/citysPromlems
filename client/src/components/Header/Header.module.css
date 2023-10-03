@@ -1,0 +1,31 @@
+.root {
+  background-image: url("./img/image_header.png");
+  background-repeat: no-repeat;
+  color: #fff;
+  text-align: center;
+  max-height: 600px;
+  background-size: 1920px, 600px;
+  padding: 10px 0;
+  margin-bottom: 30px;
+}
+
+.inner {
+  display: flex;
+  justify-content: space-between;
+}
+
+.logo {
+  color: #fff;
+  font-weight: 700;
+  line-height: 35px;
+  text-transform: uppercase;
+  letter-spacing: 0.15px;
+  border-radius: 5px;
+  padding: 0 10px;
+  text-decoration: none;
+
+
+}
+.buttons:hover {
+   background-color: #ff7100;
+ }

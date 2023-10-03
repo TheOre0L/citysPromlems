@@ -14,7 +14,7 @@ class MailService {
         })
     }
 
-    async sendActivationMail(to, link) {
+    async sendActivationMail(to, link, login) {
         await this.transporter.sendMail({
             from: process.env.SMTP_USER,
             to,
@@ -23,7 +23,7 @@ class MailService {
             html:
                 `
                     <div>
-                        <h1>Для активации перейдите по ссылке</h1>
+                        <h1>Для активации аккаута ${login} перейдите по ссылке</h1>
                         <a href="${link}">${link}</a>
                     </div>
                 `

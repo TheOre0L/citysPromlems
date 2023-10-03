@@ -12,16 +12,22 @@ class UserController {
             password,
             name,
             surname,
-            email} = req.body;
+            email,
+            city} = req.body;
+        const oneUser = await bd.query("Select * From person where login = $1", [login])
+        if(oneUser.rowCount != 0){
+            return res.json("Такой логин уже занят, выберите другой логин!")
+        }
         const hashPassword = await bcrypt.hash(password, 3);
         const activationLink = uuid.v4();
-        const candidate = await bd.query("INSERT INTO person (login, password, name, surname, date_for_regist, email, active_link) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
-        [login, hashPassword, name, surname, new Date(), email, activationLink])
-        await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
+        const candidate = await bd.query("INSERT INTO person (login, password, name, surname, date_for_regist, email, active_link, city) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+        [login, hashPassword, name, surname, new Date(), email, activationLink, city])
+        await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`, login);
         const tokens = await tokenService.generateTokens({id: candidate.rows[0].id, email: candidate.rows[0].email});
         const userDto = candidate.rows[0];
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
-        return {...tokens, user: userDto}
+        res.cookie('refreshToken', tokens.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
+        return res.json({error: "Ok", status: 200, text:"Успешная регистрация!", ...tokens, userDto})
     }
     async login (req, res){
         const {	
@@ -37,9 +43,10 @@ class UserController {
             return res.json({error: "Ok", status: 200, text:"Неверный логин или пароль"})
         }
         const tokens = tokenService.generateTokens({...userDto});
-        res.json(userDto.id)
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
-        return {...tokens, user: userDto}
+        res.cookie('refreshToken', tokens.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
+        console.log(tokens)
+        return res.json({error: "Ok", status: 200, text:"Успешный вход в аккаунт!", ...tokens, userDto})
     }
     async activation (req, res){
         const user = await bd.query("SELECT * FROM person WHERE active_link = $1", [req.params.activation_link])
@@ -48,7 +55,7 @@ class UserController {
         }
         await bd.query("UPDATE person set is_activated = $1 where id = $2 RETURNING *",
         [true, user.rows[0].id])
-        return res.json("OKEY")
+        return res.json({error: "Ok", status: 200, text:"Успешная активация аккаунта!"})
     }
     async getUsers (req, res){
         const allUsers = await bd.query("Select * From person")
