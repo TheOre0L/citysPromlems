@@ -3,12 +3,15 @@ import React, {FC, useContext, useEffect, useState} from "react";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Paper from "@mui/material/Paper";
+import { hot } from 'react-hot-loader/root';
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 import FolderIcon from "@mui/icons-material/Folder";
 import styles from "./Login.module.css";
+import {observer} from "mobx-react-lite";
+import Errors from "./Errors/errors";
 
-export const RegistForm: FC = () => {
+export const RegistForm: FC = observer(() => {
     const [login, setLogin] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [email, setEmail] = useState<string>('')
@@ -16,13 +19,21 @@ export const RegistForm: FC = () => {
     const [surname, setSurname] = useState<string>('')
     const [city, setCity] = useState<string>('')
     const {store} = useContext(Context)
-    useEffect(() => {
-        document.title = 'Регистрация | CITY Problems';
-    }, []);
-    return (
 
+        useEffect(() => {
+            document.title = 'Регистрация | CITY Problems';
+        }, [])
+    if(store.is_error) console.log(store.error)
+    return (
         <>
+
             <Paper classes={{ root: styles.root }} >
+                {store.is_error ? (
+
+                    <Errors message = {store.error}/>
+                    )
+                    :
+                    null}
                 <Typography classes={{ root: styles.title }} variant="h5">
                     Зарегистрировать аккаунт
                 </Typography>
@@ -80,15 +91,16 @@ export const RegistForm: FC = () => {
                     placeholder="Пароль"
                     fullWidth
                 />
-                <Button className={"hover:accent-amber-700"} style={{backgroundColor: "orange"}} onClick={() => store.registration(login, password, name, surname, email, city)} size="large" variant="contained" fullWidth>
+                <Button className={"hover:accent-amber-700"} style={{backgroundColor: "orange"}}  onClick={() => store.registration(login, password, name, surname, email, city)} size="large" variant="contained" fullWidth>
                     Зарегистрироваться
                 </Button>
                 <h5 className="mt-3 text-center">
                     Уже есть аккаунт? <a href={"/login"}>Войти</a>
                 </h5>
+
             </Paper>
         </>
     );
-};
+});
 
-export default RegistForm;
+export default hot(RegistForm);

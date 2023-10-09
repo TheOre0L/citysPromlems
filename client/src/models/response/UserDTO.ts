@@ -9,5 +9,6 @@ export interface UserDTO{
     "email": string,
     "active_link": string,
     "is_activated": boolean,
-    "city": string
+    "city": string,
+    "role": string,
 }

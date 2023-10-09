@@ -32,15 +32,17 @@ class TokenService {
     async saveToken(userId, refreshToken) {
         const tokenData = await bd.query("SELECT * FROM token WHERE user_id = $1", [userId])
         console.log(tokenData)
-        if (tokenData.rowCount != 0) {
-            return await bd.query("UPDATE token SET refreshtoken = $1 WHERE id = $2", [refreshToken, userId])
+        if (tokenData.rowCount > 0) {
+            await bd.query("DELETE FROM token WHERE user_id = $1", [userId])
+            const token = await bd.query("INSERT INTO token (refreshtoken, user_id) VALUES ($1, $2)", [refreshToken, userId])
+            return token;
         }
         const token = await bd.query("INSERT INTO token (refreshtoken, user_id) VALUES ($1, $2)", [refreshToken, userId])
         return token;
     }
 
-    async removeToken(refreshToken) {
-        const tokenData = await bd.query("DELETE FROM token WHERE refreshtoken = $1", [refreshToken])
+    async removeToken(userId) {
+        const tokenData = await bd.query("DELETE FROM token WHERE user_id = $1", [userId])
         return tokenData;
     }
 

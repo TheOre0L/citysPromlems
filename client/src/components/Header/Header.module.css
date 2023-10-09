@@ -23,9 +23,7 @@
   border-radius: 5px;
   padding: 0 10px;
   text-decoration: none;
-
-
 }
 .buttons:hover {
-   background-color: #ff7100;
- }
+  background-color: #ff7100;
+}

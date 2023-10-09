@@ -1,0 +1,45 @@
+.root {
+  background-image: url("./img/image_header.png");
+  background-repeat: no-repeat;
+  font-family: 'Montserrat', sans-serif;
+  color: #fff;
+  text-align: center;
+  min-height: 300px;
+
+  background-size: 100%, 600px;
+  padding: 10px 0;
+  margin-bottom: 30px;
+}
+
+.inner {
+  font-family: 'Montserrat', sans-serif;
+  display: flex;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: 'Montserrat', sans-serif;
+  color: #fff;
+  font-weight: 700;
+  line-height: 35px;
+  text-transform: uppercase;
+  letter-spacing: 0.15px;
+  border-radius: 5px;
+  padding: 0 10px;
+  text-decoration: none;
+}
+.buttons{
+  font-family: 'Montserrat', sans-serif;
+}
+.buttons:hover {
+
+   background-color: #ff7100;
+ }
+@media screen and (max-width: 1400px) {
+
+
+}
+
+@media screen and (max-width: 800px) {
+
+}

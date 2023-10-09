@@ -1,17 +1,41 @@
-import React, {useEffect} from 'react';
-import Header from "./Header";
+import React, {useContext, useEffect, useState} from 'react';
+import {Header} from "./Header/index"
+import {Text} from "./text"
 import Footer from "./footer";
-
-
-
+import {observer} from "mobx-react-lite";
+import {Context} from "../index";
+import {UserDTO} from "../models/response/UserDTO";
+import Carusel from "./carusel/Carusel";
+import styles from "./Login.module.css"
 export const Home = () => {
+    const {store} = useContext(Context);
+    const [users, setUsers] = useState<UserDTO[]>([]);
+
     useEffect(() => {
         document.title = 'Главная страница | CITY Problems';
-    }, []);
+        if (localStorage.getItem('token')) {
+            store.checkAuth()
+        }
+    }, [])
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
     return (
-        <>
-            <Header></Header>
-            <section className="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:px-8 ">
+        <div className={"items-stretch"}>
+            {store.isAuth ? <Text/> : <Header/>}
+            <div className="container">
+                <div className="row">
+                    <div className={`col-12 align-self-center ${styles.corusel}`}>
+                        <Carusel/>
+                    </div>
+                </div>
+            </div>
+            <div className="position-absolute top-0 start-50 translate-middle"></div>
+            <section className="rounded-2xl relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:px-8 ">
+
+
                 <div
                     className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.indigo.100),white)] opacity-20"></div>
                 <div
@@ -92,7 +116,7 @@ export const Home = () => {
                 </div>
             </div>
             <Footer/>
-        </>
+        </div>
     );
 };
-export default Home;
+export default observer(Home);
