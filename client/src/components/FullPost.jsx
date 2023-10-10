@@ -51,7 +51,7 @@ const FullPost = observer(() => {
         createdAt={data.post.createdat}
         LikeCount={data.post.likes.length}
         viewCount={data.post.viewcount}
-        commentsCount={3}
+        commentsCount={data.post.comments.length}
         tags={[...data.post.tags]}
         isLiked={data.isLiked}
         isFullPost

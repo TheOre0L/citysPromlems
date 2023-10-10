@@ -7,11 +7,14 @@ import styles from './AddPost.module.scss';
 import {useParams} from "react-router-dom";
 import "easymde/dist/easymde.min.css";
 import {Context} from "../../index";
+import SendIcon from '@mui/icons-material/Send';
 import {observer} from "mobx-react-lite";
+import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import {hot} from "react-hot-loader/root";
 import {Text} from "../text";
 import {Header} from "../Header";
 import Errors from "../Errors/errors";
+import SaveIcon from '@mui/icons-material/Save';
 import {$api, API_URL} from "../../http/index";
 import {CLIENT_URL} from "../../App";
 
@@ -106,7 +109,8 @@ const AddPost = observer(() => {
         <Paper style={{ padding: 30, width: "90%" }} className={styles.center}>
 
             <Button onClick={() => {inputFileRef.current.click()}} variant="outlined" size="large">
-                Загрузить превью
+                <DriveFolderUploadIcon className={"mr-2"}/>
+                Загрузить картинку
             </Button>
             <input ref={inputFileRef} type="file" onChange={handleChangeFile} hidden />
             {imageUrl && (
@@ -146,11 +150,13 @@ const AddPost = observer(() => {
             <div className={styles.buttons}>
                 {isEditing ? (
                     <Button size="large" variant="contained" onClick={updatePost}>
+                        <SaveIcon/>
                         Сохранить
                     </Button>
                 ):(
                     <Button size="large" variant="contained" onClick={handleUpload}>
                         Опубликовать
+                        <SendIcon className={"ml-2"}/>
                     </Button>
                 )}
 

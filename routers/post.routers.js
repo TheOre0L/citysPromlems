@@ -21,6 +21,10 @@ router.get('/allposts',
     postController.getPosts
 );
 
+router.get('/:id',
+    postController.getToUpbatePost
+);
+
 router.post('/:id',
     urlencodedParser,
     jsonParser,

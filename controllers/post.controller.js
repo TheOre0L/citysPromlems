@@ -122,6 +122,17 @@ class PostController {
             return res.status(400).json({result: "Непредвиденная ошибка!"})
         }
     }
+    async getToUpbatePost(req,res){
+        try{
+            const Post = await bd.query("SELECT * FROM post WHERE id = $1", [req.params.id]);
+            const Author = await bd.query("SELECT * FROM person WHERE id = $1", [Post.rows[0].author_id])
+            return res.status(200).json({post: Post.rows[0], author: Author.rows[0]});
+        }
+        catch (error) {
+            console.log(error);
+            return res.status(400).json({result: "Непредвиденная ошибка!"})
+        }
+    }
     async getPosts(req,res){
         try{
             const Post = await bd.query("SELECT * FROM post");
