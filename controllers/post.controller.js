@@ -26,7 +26,7 @@ class PostController {
                 }
             }
             console.log(tags.split(","))
-            const NewPost = await bd.query("INSERT INTO post (title, context, date_for_create, author_id, city_post, image, tags, like) VALUES" +
+            const NewPost = await bd.query("INSERT INTO post (title, context, date_for_create, author_id, city_post, image, tags, likes) VALUES" +
                 "($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *", [title, context, Date.now(), author_id, city_post, image_url, tags.split(","), []]);
             const post = NewPost.rows[0]
             return res.status(200).json({message: "Пост успешно создан!", post: post});
@@ -109,7 +109,12 @@ class PostController {
             const Post = await bd.query("SELECT * FROM post WHERE id = $1", [req.params.id]);
             const query = await bd.query("UPDATE post SET viewcount = viewcount + 1 WHERE id = $1", [req.params.id])
             const Author = await bd.query("SELECT * FROM person WHERE id = $1", [Post.rows[0].author_id])
-            return res.status(200).json({post: Post.rows[0], author: Author.rows[0]});
+            if(Post.rows[0].likes){
+                for(let i = 0; i < Post.rows[0].likes.length; i++){
+                    if(Post.rows[0].likes[i].user == req.body.userId) return res.status(200).json({post: Post.rows[0], author: Author.rows[0], isLiked: true});
+                }
+            }
+            return res.status(200).json({post: Post.rows[0], author: Author.rows[0], isLiked:false});
         }
         catch (error) {
             console.log(error);
@@ -128,13 +133,24 @@ class PostController {
     }
     async LikePost(req, res){
         try{
-            // const Post = await bd.query("SELECT * FROM post WHERE likes.user = $1", [req.body.id]);
-            // const UpdatePost = await bd.query("UPDATE post SET likes = array_append(likes, $1) WHERE id = $2 RETURNING *", [
-            //     {user: req.body.id},
-            //     req.params.id
-            // ]);
-            // res.json(Post)
-            // console.log(Post.rows[0].likes)
+            const Post = await bd.query("SELECT * FROM post WHERE id = $1", [req.params.id]);
+            console.log(Post.rows[0].likes)
+            if(Post.rows[0].likes){
+                for(let i = 0; i < Post.rows[0].likes.length; i++){
+                    if(Post.rows[0].likes[i].user == req.body.id){
+                        const UpdatePost = await bd.query("UPDATE post SET likes = array_remove(likes, $1) WHERE id = $2 RETURNING *", [
+                            {"user": req.body.id},
+                            req.params.id
+                        ]);
+                        return res.status(200).json({isLiked: false, likeCount: UpdatePost.rows[0].likes.length})
+                    }
+                }
+            }
+            const UpdatePost = await bd.query("UPDATE post SET likes = array_append(likes, $1) WHERE id = $2 RETURNING *", [
+                {user: req.body.id},
+                req.params.id
+            ]);
+            return res.status(200).json({isLiked: true, likeCount: UpdatePost.rows[0].likes.length})
         }
         catch (error) {
             console.log(error);

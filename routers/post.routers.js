@@ -21,7 +21,9 @@ router.get('/allposts',
     postController.getPosts
 );
 
-router.get('/:id',
+router.post('/:id',
+    urlencodedParser,
+    jsonParser,
     postController.findPost
 );
 

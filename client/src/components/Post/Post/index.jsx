@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import clsx from 'clsx';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Clear';
@@ -7,13 +7,16 @@ import CommentIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import EyeIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import ShareIcon from '@mui/icons-material/Share';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import styles from './Post.module.scss';
 import {UserInfo} from "../../UserInfo";
 import { PostSkeleton } from './Skeleton';
 import {Context} from "../../../index";
 import BasicModal from "../../ShareModal/ShareModal";
-
-export const Post = ({
+import $api from "../../../http";
+import {observer} from "mobx-react-lite";
+import {hot} from "react-hot-loader/root";
+const Post = ({
                        id,
                        title,
                        createdAt,
@@ -27,13 +30,21 @@ export const Post = ({
                        children,
                        isFullPost,
                        isLoading,
+                       isLiked,
                        isEditable,
                      }) => {
+    const [isLike, setIsLike] = useState(isLiked)
+    const [likeCount, setLikeCount] = useState(LikeCount)
   if (isLoading) {
     return <PostSkeleton />;
   }
-  const onClickRemove = () => {
-
+  const onClickLike = () => {
+      $api.post(`post/like/${id}`, {
+          id: Number(localStorage.getItem("userId"))
+      }).then((res) => {
+          setIsLike(res.data.isLiked)
+          setLikeCount(res.data.likeCount)
+      })
   };
 
   return (
@@ -72,6 +83,12 @@ export const Post = ({
             </ul>
             {children && <div className={styles.content}>{children}</div>}
             <ul className={styles.postDetails}>
+                <li>
+                    <button onClick={onClickLike} className={'flex hover:text-pink-700'}>
+                        {isLike ? <FavoriteIcon/> : <FavoriteBorderIcon/>}
+                    </button>
+                    <span>{likeCount}</span>
+                </li>
               <li>
                 <EyeIcon />
                 <span>{viewCount}</span>
@@ -87,3 +104,4 @@ export const Post = ({
       </div>
   );
 };
+export default hot(Post);

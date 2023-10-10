@@ -40,6 +40,7 @@ export default class Store {
     }
     async setUser(user: UserDTO) {
         this.user = await user;
+        localStorage.setItem("userId", String(this.user.id));
     }
     setLoading(bool: boolean) {
         this.isLoading = bool;

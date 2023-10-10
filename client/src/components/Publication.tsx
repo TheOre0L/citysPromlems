@@ -5,7 +5,7 @@ import {Context} from "../index";
 import {observer} from "mobx-react-lite";
 import Footer from "./footer";
 import { hot } from 'react-hot-loader/root';
-import {Post} from "./Post/Post";
+import Post from "./Post/Post";
 import {toJS} from "mobx";
 import {API_URL} from "../http";
 import Box from '@mui/material/Box';

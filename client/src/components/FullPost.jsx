@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from "react";
 import Markdown from 'react-markdown'
-import { Post } from "./Post/Post";
+import Post from "./Post/Post";
 import { Index } from "./AddComment";
 import { CommentsBlock } from "./CommentsBlock";
 import {Text} from "./text";
@@ -11,8 +11,10 @@ import {$api, API_URL} from "../http";
 import {CLIENT_URL} from "../App";
 import {toJS} from "mobx";
 import {useParams} from "react-router-dom";
+import {hot} from "react-hot-loader/root";
 
-export const FullPost = observer(() => {
+
+const FullPost = observer(() => {
     const {store} = useContext(Context);
     const {id} = useParams();
     const [isLoading, setIsLoading] = useState(true)
@@ -21,8 +23,10 @@ export const FullPost = observer(() => {
         if (localStorage.getItem('token')) {
             store.checkAuth()
         }
-        $api.get(`post/${id}`).then((res) => {
-            setData(res.data)
+        $api.post(`post/${id}`, {
+            userId: Number(localStorage.getItem("userId"))
+        }).then(async (res) => {
+            await setData(res.data)
             setIsLoading(false)
         })
     }, [])
@@ -34,7 +38,6 @@ export const FullPost = observer(() => {
   return (
     <>
         {store.isAuth ? <Text/> : <Header/>}
-
       <Post
         id={data.post.id}
         title={data.post.title}
@@ -46,27 +49,27 @@ export const FullPost = observer(() => {
           href: `${CLIENT_URL}/user/${data.author.id}`
         }}
         createdAt={"12 июня 2022 г."}
+        LikeCount={data.post.likes.length}
         viewCount={data.post.viewcount}
         commentsCount={3}
         tags={[...data.post.tags]}
+
+        isLiked={data.isLiked}
         isFullPost
       >
         <Markdown children={data.post.context}/>
-
       </Post>
       <CommentsBlock
         items={[
           {
             user: {
               fullName: "Вася Пупкин",
-              avatarUrl: "https://mui.com/static/images/avatar/1.jpg",
             },
             text: "Это тестовый комментарий 555555",
           },
           {
             user: {
               fullName: "Иван Иванов",
-              avatarUrl: "https://mui.com/static/images/avatar/2.jpg",
             },
             text: "When displaying three lines or more, the avatar is not aligned at the top. You should set the prop to align the avatar at the top",
           },
@@ -78,3 +81,4 @@ export const FullPost = observer(() => {
     </>
   );
 });
+export default hot(FullPost);

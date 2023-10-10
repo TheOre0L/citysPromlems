@@ -6,7 +6,8 @@ import Home from "./components/Home";
 import Profile from "./components/profile";
 import AddPost from "./components/AddPosts";
 import Publication from "./components/Publication";
-import {FullPost} from "./components/FullPost";
+import FullPost from "./components/FullPost";
+import Settings from "./components/settings";
 export const CLIENT_URL = "http://localhost:3000"
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Routes>
             <Route path="/login" element={<LoginForm/>}/>
             <Route path="/registration" element={<RegistForm/>}/>
+            <Route path="/settings" element={<Settings/>}/>
             <Route path="/" element={<Home/>}/>
             <Route path="/user/:id" element={<Profile/>}/>
             <Route path="/posts" element={<Publication/>}/>

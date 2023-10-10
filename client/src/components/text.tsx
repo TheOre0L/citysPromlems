@@ -73,8 +73,7 @@ export const Text = () => {
                                         <Menu.Item>
                                             {({ active }) => (
                                                 <a
-                                                    href={`${CLIENT_URL}/user/${store.user.id}`}
-                                                    onClick={() => store.getUser(parseInt(window.location.href.split("/")[4]))}
+                                                    href={`${CLIENT_URL}/settings`}
                                                     className={classNames(
                                                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                                                         'block px-4 py-2 text-sm'
