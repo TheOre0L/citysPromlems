@@ -1,6 +1,7 @@
 const bd = require('../bd');
 const humanize = require("humanize-duration");
 const fileUpload = require("express-fileupload");
+const uuid = require("uuid");
 class PostController {
     async addPost(req, res) {
         try{
@@ -26,8 +27,8 @@ class PostController {
                 }
             }
             console.log(tags.split(","))
-            const NewPost = await bd.query("INSERT INTO post (title, context, date_for_create, author_id, city_post, image, tags, likes) VALUES" +
-                "($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *", [title, context, Date.now(), author_id, city_post, image_url, tags.split(","), []]);
+            const NewPost = await bd.query("INSERT INTO post (title, context, date_for_create, author_id, city_post, image, tags, likes, comments, createdat) VALUES" +
+                "($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *", [title, context, Date.now(), author_id, city_post, image_url, tags.split(","), [], [], new Date()]);
             const post = NewPost.rows[0]
             return res.status(200).json({message: "Пост успешно создан!", post: post});
         }
@@ -157,5 +158,28 @@ class PostController {
             return res.status(400).json({message: "Непредвиденная ошибка!"})
         }
     }
+
+    async addComment(req,res) {
+        try{
+            const Post = await bd.query("SELECT * FROM post WHERE id = $1", [req.params.id]);
+            const UpdatePost = await bd.query("UPDATE post SET comments = array_append(comments, $1) WHERE id = $2 RETURNING *", [
+                {
+                    id_comment: uuid.v4(),
+                    user: {
+                        id: req.body.id,
+                        fullName: `${req.body.name} ${req.body.surname}`,
+                        avatarUrl: `${req.body.avatarUrl}`
+                    },
+                    createdAt: new Date(),
+                    text: `${req.body.commentText}`
+                },
+                req.params.id
+            ]);
+        } catch (error) {
+            console.log(error);
+            return res.status(400).json({message: "Непредвиденная ошибка!"})
+        }
+    }
 }
+
 module.exports = new PostController();

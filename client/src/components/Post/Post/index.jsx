@@ -69,7 +69,7 @@ const Post = ({
             />
         )}
         <div className={styles.wrapper}>
-            {isFullPost ? <UserInfo {...user} /> : null}
+            {isFullPost ? <UserInfo {...user}  additionalText={createdAt}/> : null}
           <div className={styles.indention}>
             <h2 className={clsx(styles.title, { [styles.titleFull]: isFullPost })}>
               {isFullPost ? title : <a href={`/post/${id}`}>{title}</a>}
@@ -84,10 +84,18 @@ const Post = ({
             {children && <div className={styles.content}>{children}</div>}
             <ul className={styles.postDetails}>
                 <li>
-                    <button onClick={onClickLike} className={'flex hover:text-pink-700'}>
-                        {isLike ? <FavoriteIcon/> : <FavoriteBorderIcon/>}
-                    </button>
-                    <span>{likeCount}</span>
+                    {isFullPost ?
+                        <>
+                            <button onClick={onClickLike} className={'flex hover:text-pink-700'}>
+                                {isLike ? <FavoriteIcon className={'flex text-pink-700'}/> : <FavoriteBorderIcon className={'flex'}/>}
+                            </button>
+                            <span>{likeCount}</span>
+                        </> :
+                        <>
+                            <FavoriteBorderIcon className={'flex'}/>
+                            <span>{likeCount}</span>
+                        </>
+                    }
                 </li>
               <li>
                 <EyeIcon />

@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from "react";
 import Markdown from 'react-markdown'
 import Post from "./Post/Post";
 import { Index } from "./AddComment";
-import { CommentsBlock } from "./CommentsBlock";
+import CommentsBlock from "./CommentsBlock";
 import {Text} from "./text";
 import {Header} from "./Header";
 import {Context} from "../index";
@@ -48,32 +48,18 @@ const FullPost = observer(() => {
           fullName: `${data.author.name} ${data.author.surname}`,
           href: `${CLIENT_URL}/user/${data.author.id}`
         }}
-        createdAt={"12 июня 2022 г."}
+        createdAt={data.post.createdat}
         LikeCount={data.post.likes.length}
         viewCount={data.post.viewcount}
         commentsCount={3}
         tags={[...data.post.tags]}
-
         isLiked={data.isLiked}
         isFullPost
       >
         <Markdown children={data.post.context}/>
       </Post>
       <CommentsBlock
-        items={[
-          {
-            user: {
-              fullName: "Вася Пупкин",
-            },
-            text: "Это тестовый комментарий 555555",
-          },
-          {
-            user: {
-              fullName: "Иван Иванов",
-            },
-            text: "When displaying three lines or more, the avatar is not aligned at the top. You should set the prop to align the avatar at the top",
-          },
-        ]}
+        items={[...data.post.comments]}
         isLoading={false}
       >
         <Index />

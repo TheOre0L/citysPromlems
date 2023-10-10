@@ -7,7 +7,7 @@ import Footer from "./footer";
 import { hot } from 'react-hot-loader/root';
 import Post from "./Post/Post";
 import {toJS} from "mobx";
-import {API_URL} from "../http";
+import {$api, API_URL} from "../http";
 import Box from '@mui/material/Box';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
@@ -15,14 +15,24 @@ import AddIcon from '@mui/icons-material/Add';
 const Publication : FC = observer( () => {
     const [posts, SetPosts]= useState([])
     const {store} = useContext(Context);
+    const [isLoading, setIsLoading] = useState(true)
     useEffect(() => {
         document.title = 'Публикации | CITY Problems';
         if (localStorage.getItem('token')) {
             store.checkAuth()
         }
-        store.getAllPosts()
-        SetPosts(toJS(store.allPosts))
+        $api.get("post/allposts").then((res) =>{
+            console.log(res.data)
+            SetPosts(res.data)
+            setIsLoading(false)
+        })
     }, []);
+
+
+    if(isLoading){
+        // @ts-ignore
+        return <Post isLoading={isLoading}/>
+    }
 
     return (
 
@@ -36,19 +46,20 @@ const Publication : FC = observer( () => {
                 <Header/>
             )
             }
-            {toJS(store.allPosts).map((item:any) => (
+            {posts.length == 0 ? <h1 className={"text-center text-3xl font-mont"}>Постов нет :(</h1> : null}
+            {toJS(posts).map((item:any) => (
                 // @ts-ignore
-                <Post key={item.id}
+                <Post
                     id={item.id}
                     title={item.title}
                     imageUrl={`${API_URL}${item.image}`}
-                    createdAt={'12 июня 2022 г.'}
+                    LikeCount={item.likes.length}
+                    createdAt={item.createdat}
                     viewCount={item.viewcount}
-                    commentsCount={3}
+                    commentsCount={item.comments.length ? item.comments.length : 0}
                     tags={[...item.tags]}
                     isEditable = {item.author_id == store.user.id || store.user.role == "ADMIN" ? true : false}
                     store = {store}
-                    isLoading = {store.isLoading}
                 />
             ))}
             <Box sx={{ position: 'absolute', bottom: 16, right: 16 }}>

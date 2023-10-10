@@ -34,12 +34,20 @@ router.post('/like/:id',
     postController.LikePost
 );
 
+router.post('/comment/add/:id',
+    urlencodedParser,
+    jsonParser,
+    authMiddleware,
+    postController.addComment
+);
+
 router.put('/update/:id',
     urlencodedParser,
     jsonParser,
     authMiddleware,
     postController.updatePost
 );
+
 router.delete('/delete/:id',
     urlencodedParser,
     jsonParser,
