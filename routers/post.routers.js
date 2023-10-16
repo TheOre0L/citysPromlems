@@ -45,6 +45,13 @@ router.post('/comment/add/:id',
     postController.addComment
 );
 
+router.delete('/comment/delete/:id',
+    urlencodedParser,
+    jsonParser,
+    authMiddleware,
+    postController.delComment
+);
+
 router.put('/update/:id',
     urlencodedParser,
     jsonParser,

@@ -1,5 +1,5 @@
 export interface PostDto {
-    id:number,
+    idpost:number,
     title:string,
     context:string,
     author_id:number,

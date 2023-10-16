@@ -11,6 +11,7 @@ import {$api, API_URL} from "../http";
 import Box from '@mui/material/Box';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
+import {CLIENT_URL} from "../App";
 
 const Publication : FC = observer( () => {
     const [posts, SetPosts]= useState([])
@@ -50,11 +51,16 @@ const Publication : FC = observer( () => {
             {toJS(posts).map((item:any) => (
                 // @ts-ignore
                 <Post
-                    id={item.id}
+                    id={item.idpost}
                     title={item.title}
                     imageUrl={`${API_URL}${item.image}`}
                     LikeCount={item.likes.length}
                     createdAt={item.createdat}
+                    user={{
+                        avatarUrl: `${API_URL}${item.avatarurl}`,
+                        fullName: `${item.name} ${item.surname}`,
+                        href: `${CLIENT_URL}/user/${item.id}`
+                    }}
                     viewCount={item.viewcount}
                     commentsCount={item.comments.length ? item.comments.length : 0}
                     tags={[...item.tags]}

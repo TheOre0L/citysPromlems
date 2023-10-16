@@ -4,15 +4,21 @@ import {observer} from "mobx-react-lite";
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import {makeAutoObservable, toJS} from "mobx";
+import $api, {API_URL} from "../http";
+import {useParams} from "react-router-dom";
 const Profile = () => {
-    const {store} = useContext(Context);
+    const [datas, setData] = useState<any>();
+    const [isLoading, setLoading] = useState(true);
+    const {id} = useParams();
     useEffect(() => {
 
-        if (localStorage.getItem('token')) {
-           store.getUser(parseInt(window.location.href.split("/")[4]))
-        }
-
+        $api.get(`api/user/${id}`).then((res) => {
+            setData(res.data)
+            document.title = `Профиль ${res.data.user.name} ${res.data.user.surname} | CITY Problems`
+            setLoading(false)
+        })
     }, [])
+
     function stringToColor(string: string) {
         let hash = 0;
         let i;
@@ -40,23 +46,32 @@ const Profile = () => {
             children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
         };
     }
-    document.title = `Профиль ${store.userR.name} ${store.userR.surname} | CITY Problems`;
+
+    if(isLoading){
+        return <div>Идет загрузка!</div>
+    }
     return (
         <div>
+
             <div className="h-screen bg-gray-200  dark:bg-gray-800   flex flex-wrap items-center  justify-center  ">
                 <div
                     className="container lg:w-2/6 xl:w-2/7 sm:w-full md:w-2/3    bg-white  shadow-lg    transform   duration-200 easy-in-out">
                     <div className=" h-16 overflow-hidden">
                     </div>
                     <div className="flex justify-center px-5  -mt-12">
-                        <Avatar className="p-2" style={{height: "75px", width: "75px"}} {...stringAvatar(`${store.userR.name} ${store.userR.surname}`)} />
+                        {!datas.user.avatarurl ? (
+                            <Avatar className="p-2" style={{height: "100px", width: "100px"}} {...stringAvatar(`${datas.user.name} ${datas.user.surname}`)} />
+                        ):(
+                            <Avatar style={{height: "100px", width: "100px"}} src={`${API_URL}${datas.user.avatarurl}`} />
+                        )}
+
                     </div>
                     <div className=" ">
                         <div className="text-center px-14">
-                            <h2 className="text-gray-800 text-3xl font-bold">{`${store.userR.name} ${store.userR.surname}`}</h2>
-                            <p className="text-gray-400 mt-2">{`${store.userR.city}`}</p>
+                            <h2 className="text-gray-800 text-3xl font-bold">{`${datas.user.name} ${datas.user.surname}`}</h2>
+                            <p className="text-gray-400 mt-2">{`${datas.user.city}`}</p>
                             {
-                                store.userR.is_activated ? (<p className="text-gray-400 mt-2">{`Аккаунт активирован`}</p>) : (<p className="text-gray-400 mt-2">{`Аккаунт не активирован`}</p>)
+                                datas.user.is_activated ? (<p className="text-gray-400 mt-2">{`Аккаунт активирован`}</p>) : (<p className="text-gray-400 mt-2">{`Аккаунт не активирован`}</p>)
                             }
                             <p className="mt-2 text-gray-600">Lorem Ipsum is simply dummy text of the printing and
                                 typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since

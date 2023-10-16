@@ -52,6 +52,7 @@ const Post = ({
         {isEditable && (
             <div className={styles.editButtons}>
               <a href={`/post/${id}/edit`}>
+                  {console.log(id)}
                 <IconButton color="primary">
                   <EditIcon />
                 </IconButton>
@@ -69,7 +70,7 @@ const Post = ({
             />
         )}
         <div className={styles.wrapper}>
-            {isFullPost ? <UserInfo {...user}  additionalText={createdAt}/> : null}
+            <UserInfo {...user}  additionalText={new Date(createdAt).toDateString()}/>
           <div className={styles.indention}>
             <h2 className={clsx(styles.title, { [styles.titleFull]: isFullPost })}>
               {isFullPost ? title : <a href={`/post/${id}`}>{title}</a>}

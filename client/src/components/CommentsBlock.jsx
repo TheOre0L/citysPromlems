@@ -10,8 +10,19 @@ import List from "@mui/material/List";
 import Skeleton from "@mui/material/Skeleton";
 import {hot} from "react-hot-loader/root";
 import Markdown from "react-markdown";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Clear";
+import {useParams} from "react-router-dom";
+import $api, {API_URL} from "../http";
 
-const CommentsBlock = ({ items, children, isLoading = true }) => {
+const CommentsBlock = ({ items, store, children, isLoading = true }) => {
+    const {id} = useParams();
+    const DelComments = async (obj) => {
+        $api.delete(`post/comment/delete/${id}`, {
+            id_comment: obj.id_comment
+        })
+    }
+
   return (
     <SideBlock title="Комментарии">
       <List>
@@ -22,7 +33,7 @@ const CommentsBlock = ({ items, children, isLoading = true }) => {
                     {isLoading ? (
                         <Skeleton variant="circular" width={40} height={40} />
                     ) : (
-                        <Avatar alt={obj.user.fullName} src={obj.user.avatarUrl} />
+                        <Avatar alt={obj.user.fullName} src={`${API_URL}${obj.user.avatarUrl}`} />
                     )}
                 </ListItemAvatar>
               {isLoading ? (
@@ -32,11 +43,18 @@ const CommentsBlock = ({ items, children, isLoading = true }) => {
                 </div>
               ) : (
                   <>
-                      <ListItemText
-                          primary={obj.user.fullName}
-                          secondary={obj.createdAt}
-                      />
-                      <p>{obj.text}</p>
+                      <ListItemText>
+                          {obj.user.fullName} <span style={{fontSize: "10px"}}>{new Date(obj.createdAt).toDateString()}</span> <br/>
+                          {obj.text}
+                      </ListItemText>
+                      {obj.user.id == store.user.id || store.user.role == "ADMIN" ? (
+                          <IconButton onClick={() => {DelComments(obj)}} color="secondary">
+                              <DeleteIcon />
+                          </IconButton>
+                      ) : (
+                          null
+                      )
+                      }
                   </>
               )}
             </ListItem>

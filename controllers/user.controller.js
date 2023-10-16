@@ -122,14 +122,14 @@ class UserController {
         try {
             const {
                 id,
-                login,
-                password,
                 name,
+                image,
                 surname} = req.body;
-            const updateUser = await bd.query("UPDATE person set login = $1, password = $2, name = $3, surname = $4 where id = $5 RETURNING *",
-                [login, password, name, surname, id])
+            const updateUser = await bd.query("UPDATE person set name = $1, surname = $2, avatarurl = $3 where id = $4 RETURNING *",
+                [name, surname, image, id])
             res.json(updateUser.rows[0])
         } catch (e) {
+            console.log(e)
             return res.json(e)
         }
     }

@@ -11,14 +11,13 @@ router.post('/registration',
     urlencodedParser,
     jsonParser,
     userController.registration);
-router.get("/registration")
 router.post('/login', urlencodedParser ,jsonParser, userController.login)
 router.get('/users', authMiddleware,userController.getUsers)
 router.get('/activate/:activation_link', userController.activation)
 router.get('/user/:id', userController.getOneUser)
 router.get('/refresh', userController.refresh)
 router.get('/logout', userController.logout)
-router.put('/user', urlencodedParser ,jsonParser, userController.updateUser)
+router.put('/update', urlencodedParser ,jsonParser, userController.updateUser)
 router.delete('/user/:id', urlencodedParser ,jsonParser, userController.deleteUser)
 
 module.exports = router;

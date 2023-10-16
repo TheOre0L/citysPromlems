@@ -7,7 +7,7 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import {Context} from "../../index";
 import {useParams} from "react-router-dom";
-import $api from "../../http";
+import $api, {API_URL} from "../../http";
 import {CLIENT_URL} from "../../App";
 
 export const Index = () => {
@@ -24,6 +24,7 @@ export const Index = () => {
     $api.post(`post/comment/add/${id}`, {
       id: store.user.id,
       name: store.user.name,
+      avatarUrl: store.user.avatarurl,
       surname: store.user.surname,
       commentText: commentText
     }).then(window.location.replace(`${CLIENT_URL}/post/${id}`))
@@ -33,7 +34,7 @@ export const Index = () => {
       <div className={styles.root}>
         <Avatar alt={`${store.user.name} ${store.user.surname}`}
                 classes={{ root: styles.avatar }}
-                src/>
+                src={`${API_URL}${store.user.avatarurl}`}/>
         <div className={styles.form}>
           <TextField
             label="Написать комментарий"

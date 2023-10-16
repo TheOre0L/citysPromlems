@@ -65,7 +65,7 @@ class PostController {
             if(context.length == 0) context = null;
             if(imageUrl.length == 0) imageUrl = null;
             if(tags.length == 0) tags = null;
-            const UpdatePost = await bd.query("UPDATE post SET title = $1, context = $2, image = $3, city_post = $4, tags = $5 WHERE id = $6 RETURNING *", [
+            const UpdatePost = await bd.query("UPDATE post SET title = $1, context = $2, image = $3, city_post = $4, tags = $5 WHERE idPost = $6 RETURNING *", [
                     title,
                     context,
                     imageUrl,
@@ -97,7 +97,7 @@ class PostController {
     }
     async deletePost(req,res) {
         try{
-            const DeletePost = await bd.query("DELETE FROM post WHERE id = $1", [req.params.id])
+            const DeletePost = await bd.query("DELETE FROM post WHERE idPost = $1", [req.params.id])
             res.status(200).json(DeletePost)
         }
         catch (error) {
@@ -107,8 +107,8 @@ class PostController {
     }
     async findPost(req,res){
         try{
-            const Post = await bd.query("SELECT * FROM post WHERE id = $1", [req.params.id]);
-            const query = await bd.query("UPDATE post SET viewcount = viewcount + 1 WHERE id = $1", [req.params.id])
+            const Post = await bd.query("SELECT * FROM post WHERE idPost = $1", [req.params.id]);
+            const query = await bd.query("UPDATE post SET viewcount = viewcount + 1 WHERE idPost = $1", [req.params.id])
             const Author = await bd.query("SELECT * FROM person WHERE id = $1", [Post.rows[0].author_id])
             if(Post.rows[0].likes){
                 for(let i = 0; i < Post.rows[0].likes.length; i++){
@@ -124,7 +124,7 @@ class PostController {
     }
     async getToUpbatePost(req,res){
         try{
-            const Post = await bd.query("SELECT * FROM post WHERE id = $1", [req.params.id]);
+            const Post = await bd.query("SELECT * FROM post WHERE idpost = $1", [req.params.id]);
             const Author = await bd.query("SELECT * FROM person WHERE id = $1", [Post.rows[0].author_id])
             return res.status(200).json({post: Post.rows[0], author: Author.rows[0]});
         }
@@ -135,7 +135,7 @@ class PostController {
     }
     async getPosts(req,res){
         try{
-            const Post = await bd.query("SELECT * FROM post");
+            const Post = await bd.query("SELECT * FROM post, person WHERE post.author_id = person.id");
             return res.status(200).json(Post.rows);
         }
         catch (error) {
@@ -145,12 +145,12 @@ class PostController {
     }
     async LikePost(req, res){
         try{
-            const Post = await bd.query("SELECT * FROM post WHERE id = $1", [req.params.id]);
+            const Post = await bd.query("SELECT * FROM post WHERE idPost = $1", [req.params.id]);
             console.log(Post.rows[0].likes)
             if(Post.rows[0].likes){
                 for(let i = 0; i < Post.rows[0].likes.length; i++){
                     if(Post.rows[0].likes[i].user == req.body.id){
-                        const UpdatePost = await bd.query("UPDATE post SET likes = array_remove(likes, $1) WHERE id = $2 RETURNING *", [
+                        const UpdatePost = await bd.query("UPDATE post SET likes = array_remove(likes, $1) WHERE idPost = $2 RETURNING *", [
                             {"user": req.body.id},
                             req.params.id
                         ]);
@@ -158,7 +158,7 @@ class PostController {
                     }
                 }
             }
-            const UpdatePost = await bd.query("UPDATE post SET likes = array_append(likes, $1) WHERE id = $2 RETURNING *", [
+            const UpdatePost = await bd.query("UPDATE post SET likes = array_append(likes, $1) WHERE idPost = $2 RETURNING *", [
                 {user: req.body.id},
                 req.params.id
             ]);
@@ -170,10 +170,20 @@ class PostController {
         }
     }
 
+    async delComment(req,res) {
+        try {
+            const Post = await bd.query("SELECT comments FROM post WHERE idpost = $1", [req.params.id]);
+
+        }catch (error) {
+            console.log(error);
+            return res.status(400).json({message: "Непредвиденная ошибка!"})
+        }
+    }
+
     async addComment(req,res) {
         try{
-            const Post = await bd.query("SELECT * FROM post WHERE id = $1", [req.params.id]);
-            const UpdatePost = await bd.query("UPDATE post SET comments = array_append(comments, $1) WHERE id = $2 RETURNING *", [
+            const Post = await bd.query("SELECT * FROM post WHERE idPost = $1", [req.params.id]);
+            const UpdatePost = await bd.query("UPDATE post SET comments = array_append(comments, $1) WHERE idPost = $2 RETURNING *", [
                 {
                     id_comment: uuid.v4(),
                     user: {
@@ -192,5 +202,4 @@ class PostController {
         }
     }
 }
-
 module.exports = new PostController();
