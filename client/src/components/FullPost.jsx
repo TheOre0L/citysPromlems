@@ -18,7 +18,9 @@ const FullPost = observer(() => {
     const {store} = useContext(Context);
     const {id} = useParams();
     const [isLoading, setIsLoading] = useState(true)
+    const [isLoadingComm, setIsLoadingComm] = useState(true)
     const [data, setData] = useState()
+    const [comment, setComment] = useState()
     useEffect(() => {
         if (localStorage.getItem('token')) {
             store.checkAuth()
@@ -29,9 +31,15 @@ const FullPost = observer(() => {
             await setData(res.data)
             setIsLoading(false)
         })
+        $api.post(`comment/all`, {
+            idpost: id
+        }).then(res => {
+            setComment(res.data)
+            setIsLoadingComm(false)
+        })
     }, [])
 
-    if(isLoading){
+    if(isLoading || isLoadingComm){
         return <Post isLoading={isLoading}/>
     }
 
@@ -43,24 +51,26 @@ const FullPost = observer(() => {
         title={data.post.title}
         imageUrl={`${API_URL}${data.post.image}`}
         user={{
-            avatarUrl: `${API_URL}${data.author.avatarurl}`,
-            fullName: `${data.author.name} ${data.author.surname}`,
-            href: `${CLIENT_URL}/user/${data.author.id}`
+            avatarUrl: `${API_URL}${data.post.avatarurl}`,
+            fullName: `${data.post.name} ${data.post.surname}`,
+            href: `${CLIENT_URL}/user/${data.post.id}`
         }}
         createdAt={data.post.createdat}
+        city_post={data.post.city_post}
         LikeCount={data.post.likes.length}
         viewCount={data.post.viewcount}
-        commentsCount={data.post.comments.length}
+        commentsCount={data.post.count}
         tags={[...data.post.tags]}
         isLiked={data.isLiked}
         isFullPost
       >
         <Markdown children={data.post.context}/>
       </Post>
+        {console.log([...comment])}
       <CommentsBlock
-        items={[...data.post.comments]}
+        items={[...comment]}
         store={store}
-        isLoading={false}
+        isLoading={isLoadingComm}
       >
         <Index />
       </CommentsBlock>

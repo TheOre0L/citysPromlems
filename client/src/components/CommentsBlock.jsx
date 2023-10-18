@@ -14,13 +14,13 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Clear";
 import {useParams} from "react-router-dom";
 import $api, {API_URL} from "../http";
+import {observer} from "mobx-react-lite";
 
-const CommentsBlock = ({ items, store, children, isLoading = true }) => {
+const CommentsBlock = observer(({ items, store, children, isLoading = true }) => {
     const {id} = useParams();
-    const DelComments = async (obj) => {
-        $api.delete(`post/comment/delete/${id}`, {
-            id_comment: obj.id_comment
-        })
+    const DelComments = async (idcomment) => {
+        $api.delete(`comment/delete/${idcomment}`)
+        window.location.replace(`/post/${id}`)
     }
 
   return (
@@ -33,7 +33,7 @@ const CommentsBlock = ({ items, store, children, isLoading = true }) => {
                     {isLoading ? (
                         <Skeleton variant="circular" width={40} height={40} />
                     ) : (
-                        <Avatar alt={obj.user.fullName} src={`${API_URL}${obj.user.avatarUrl}`} />
+                        <Avatar alt={obj.name} src={`${API_URL}${obj.avatarurl}`} />
                     )}
                 </ListItemAvatar>
               {isLoading ? (
@@ -44,11 +44,11 @@ const CommentsBlock = ({ items, store, children, isLoading = true }) => {
               ) : (
                   <>
                       <ListItemText>
-                          {obj.user.fullName} <span style={{fontSize: "10px"}}>{new Date(obj.createdAt).toDateString()}</span> <br/>
+                          {obj.name} <span style={{fontSize: "10px"}}>{new Date(obj.createdat).toDateString()}</span> <br/>
                           {obj.text}
                       </ListItemText>
-                      {obj.user.id == store.user.id || store.user.role == "ADMIN" ? (
-                          <IconButton onClick={() => {DelComments(obj)}} color="secondary">
+                      {obj.id == store.user.id || store.user.role == "ADMIN" ? (
+                          <IconButton onClick={() => {DelComments(obj.idcomment)}} color="secondary">
                               <DeleteIcon />
                           </IconButton>
                       ) : (
@@ -65,5 +65,5 @@ const CommentsBlock = ({ items, store, children, isLoading = true }) => {
       {children}
     </SideBlock>
   );
-};
+});
 export default hot(CommentsBlock);

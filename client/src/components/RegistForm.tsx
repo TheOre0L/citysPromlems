@@ -10,6 +10,9 @@ import FolderIcon from "@mui/icons-material/Folder";
 import styles from "./Login.module.css";
 import {observer} from "mobx-react-lite";
 import Errors from "./Errors/errors";
+import {Header} from "./Header";
+import Footer from "./footer";
+import { Link } from "react-router-dom";
 
 export const RegistForm: FC = observer(() => {
     const [login, setLogin] = useState<string>('')
@@ -26,7 +29,7 @@ export const RegistForm: FC = observer(() => {
     if(store.is_error) console.log(store.error)
     return (
         <>
-
+            <Header/>
             <Paper classes={{ root: styles.root }} >
                 {store.is_error ? (
 
@@ -95,10 +98,11 @@ export const RegistForm: FC = observer(() => {
                     Зарегистрироваться
                 </Button>
                 <h5 className="mt-3 text-center">
-                    Уже есть аккаунт? <a href={"/login"}>Войти</a>
+                    Уже есть аккаунт? <Link to={"/login"}>Войти</Link>
                 </h5>
 
             </Paper>
+            <Footer/>
         </>
     );
 });

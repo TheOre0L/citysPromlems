@@ -7,6 +7,7 @@ const multer = require("multer")
 const cookieParser = require('cookie-parser')
 const userRouter = require("./routers/user.routers")
 const postRouter = require("./routers/post.routers")
+const commentRouter = require("./routers/comment.router")
 const authMiddleware = require("./middlewares/auth.middelewares");
 const isActive = require('./middlewares/isActive.middlewares')
 
@@ -19,7 +20,7 @@ app.use('/uploads', express.static('uploads'));
 
 app.use("/api", userRouter)
 app.use("/post", postRouter)
-
+app.use("/comment", commentRouter)
 
 const storage = multer.diskStorage({
     destination: (_, __, cd) => {

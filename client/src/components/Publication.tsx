@@ -55,6 +55,7 @@ const Publication : FC = observer( () => {
                     title={item.title}
                     imageUrl={`${API_URL}${item.image}`}
                     LikeCount={item.likes.length}
+                    city_post={item.city_post}
                     createdAt={item.createdat}
                     user={{
                         avatarUrl: `${API_URL}${item.avatarurl}`,
@@ -62,13 +63,13 @@ const Publication : FC = observer( () => {
                         href: `${CLIENT_URL}/user/${item.id}`
                     }}
                     viewCount={item.viewcount}
-                    commentsCount={item.comments.length ? item.comments.length : 0}
+                    commentsCount={item.commentcount}
                     tags={[...item.tags]}
                     isEditable = {item.author_id == store.user.id || store.user.role == "ADMIN" ? true : false}
                     store = {store}
                 />
             ))}
-            <Box sx={{ position: 'absolute', bottom: 16, right: 16 }}>
+            <Box sx={{ position: 'fixed', bottom: 16, right: 16 }}>
                 <Fab href={"post/create"} color="primary" aria-label="add">
                     <AddIcon/>
                 </Fab>

@@ -8,6 +8,9 @@
     import styles from "./Login.module.css";
     import Errors from "./Errors/errors";
     import {observer} from "mobx-react-lite";
+    import Footer from "./footer";
+    import {Header} from "./Header";
+    import {Link} from "react-router-dom";
 
     export const LoginForm: FC = observer(() => {
         const [login, setLogin] = useState<string>('')
@@ -20,6 +23,8 @@
         // }, []);
         //if(store.is_error) console.log(store.error);
         return (
+            <>
+                <Header/>
             <Paper classes={{ root: styles.root }} className={"bg-stone-200"}>
 
                 {store.is_error ?
@@ -50,9 +55,11 @@
                     Войти
                 </Button>
                 <h5 className="mt-5">
-                    Ещё нет аккаунта? <a href={"/registration"}>Зарегистрироваться</a>
+                    Ещё нет аккаунта? <Link to={"/registration"}>Зарегистрироваться</Link>
                 </h5>
             </Paper>
+                <Footer/>
+        </>
         );
     });
 

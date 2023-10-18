@@ -38,20 +38,6 @@ router.post('/like/:id',
     postController.LikePost
 );
 
-router.post('/comment/add/:id',
-    urlencodedParser,
-    jsonParser,
-    authMiddleware,
-    postController.addComment
-);
-
-router.delete('/comment/delete/:id',
-    urlencodedParser,
-    jsonParser,
-    authMiddleware,
-    postController.delComment
-);
-
 router.put('/update/:id',
     urlencodedParser,
     jsonParser,

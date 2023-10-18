@@ -12,6 +12,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import {CLIENT_URL} from "../App";
+import {Link} from "react-router-dom";
 function classNames(...classes: any[]) {
     return classes.filter(Boolean).join(' ')
 }
@@ -25,7 +26,7 @@ export const Text = () => {
             <nav className=" text-dark border-gray-200 px-4 lg:px-6 py-2.5">
                 <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
                             <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-                                 <a className={styles.logo} href="/">
+                                 <Link className={styles.logo} to="/">
                                     <div>
                                       <span className={"text-3xl caret-amber-600"} style={{color: "#d97706", textDecoration: "none"}}>
                                         CITY
@@ -34,7 +35,7 @@ export const Text = () => {
                                         Problems
                                       </span>
                                     </div>
-                                 </a>
+                                 </Link>
                             </span>
                     <div className="flex items-center lg:order-2">
                         <Menu as="div" className="relative inline-block text-left">
@@ -58,8 +59,8 @@ export const Text = () => {
                                     <div className="py-1">
                                         <Menu.Item>
                                             {({ active }) => (
-                                                <a
-                                                    href={`${CLIENT_URL}/user/${store.user.id}`}
+                                                <Link
+                                                    to={`${CLIENT_URL}/user/${store.user.id}`}
                                                     onClick={() => store.getUser(parseInt(window.location.href.split("/")[4]))}
                                                     className={classNames(
                                                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
@@ -67,20 +68,20 @@ export const Text = () => {
                                                     )}
                                                 >
                                                     Профиль
-                                                </a>
+                                                </Link>
                                             )}
                                         </Menu.Item>
                                         <Menu.Item>
                                             {({ active }) => (
-                                                <a
-                                                    href={`${CLIENT_URL}/settings`}
+                                                <Link
+                                                    to={`${CLIENT_URL}/settings`}
                                                     className={classNames(
                                                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                                                         'block px-4 py-2 text-sm'
                                                     )}
                                                 >
                                                     Настройки
-                                                </a>
+                                                </Link>
                                             )}
                                         </Menu.Item>
 

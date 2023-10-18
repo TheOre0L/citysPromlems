@@ -21,12 +21,10 @@ export const Index = () => {
   }, [])
 
   const sendComment = () => {
-    $api.post(`post/comment/add/${id}`, {
-      id: store.user.id,
-      name: store.user.name,
-      avatarUrl: store.user.avatarurl,
-      surname: store.user.surname,
-      commentText: commentText
+    $api.post(`comment/add`, {
+      author_com_id: store.user.id,
+      idpost: id,
+      text: commentText
     }).then(window.location.replace(`${CLIENT_URL}/post/${id}`))
   }
   return (

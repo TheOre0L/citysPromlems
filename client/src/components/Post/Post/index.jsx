@@ -16,6 +16,7 @@ import BasicModal from "../../ShareModal/ShareModal";
 import $api from "../../../http";
 import {observer} from "mobx-react-lite";
 import {hot} from "react-hot-loader/root";
+import {Link} from "react-router-dom";
 const Post = ({
                        id,
                        title,
@@ -23,6 +24,7 @@ const Post = ({
                        imageUrl,
                        user,
                        LikeCount,
+                        city_post,
                        viewCount,
                        store,
                        commentsCount,
@@ -51,12 +53,12 @@ const Post = ({
       <div className={clsx(styles.root, { [styles.rootFull]: isFullPost })}>
         {isEditable && (
             <div className={styles.editButtons}>
-              <a href={`/post/${id}/edit`}>
+              <Link to={`/post/${id}/edit`}>
                   {console.log(id)}
                 <IconButton color="primary">
                   <EditIcon />
                 </IconButton>
-              </a>
+              </Link>
               <IconButton onClick={() => {store.deletePost(id)}} color="secondary">
                 <DeleteIcon />
               </IconButton>
@@ -73,14 +75,12 @@ const Post = ({
             <UserInfo {...user}  additionalText={new Date(createdAt).toDateString()}/>
           <div className={styles.indention}>
             <h2 className={clsx(styles.title, { [styles.titleFull]: isFullPost })}>
-              {isFullPost ? title : <a href={`/post/${id}`}>{title}</a>}
+              {isFullPost ? title : <Link to={`/post/${id}`}>{title}</Link>}
             </h2>
             <ul className={styles.tags}>
-              {tags.map((name) => (
-                  <li key={name}>
-                    <a href={`/tag/${name}`}>#{name}</a>
+                  <li key={city_post}>
+                    <Link to={`/city/${city_post}`}>#{city_post}</Link>
                   </li>
-              ))}
             </ul>
             {children && <div className={styles.content}>{children}</div>}
             <ul className={styles.postDetails}>

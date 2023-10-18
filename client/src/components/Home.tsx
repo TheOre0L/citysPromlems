@@ -3,6 +3,7 @@ import {Header} from "./Header/index"
 import {Text} from "./text"
 import Footer from "./footer";
 import {observer} from "mobx-react-lite";
+import {Link} from "react-router-dom"
 import {Context} from "../index";
 import {UserDTO} from "../models/response/UserDTO";
 import Carusel from "./carusel/Carusel";
