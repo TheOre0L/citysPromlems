@@ -11,13 +11,11 @@ class PostController {
                 author_id,
                 city_post,
                 image_url,
-                tags
             } = req.body;
             if (title.length == 0) title = null;
             if (context.length == 0) context = null;
             if (image_url.length == 0) image_url = null;
             if (author_id.length == 0) author_id = null;
-            if (tags.length == 0) tags = null;
             const FindPostThisUser = await bd.query("SELECT date_for_create FROM post WHERE author_id = $1", [author_id]);
             if (FindPostThisUser.rowCount != 0) {
                 if (FindPostThisUser.rows[0].date_for_create !== null && 10800000 - (Date.now() - FindPostThisUser.rows[0].date_for_create) > 0) {
@@ -26,9 +24,8 @@ class PostController {
                     });
                 }
             }
-            console.log(tags.split(","))
-            const NewPost = await bd.query("INSERT INTO post (title, context, date_for_create, author_id, city_post, image, tags, likes, createdat) VALUES" +
-                "($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *", [title, context, Date.now(), author_id, city_post, image_url, tags.split(","), [], new Date()]);
+            const NewPost = await bd.query("INSERT INTO post (title, context, date_for_create, author_id, city_post, image, likes, createdat) VALUES" +
+                "($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *", [title, context, Date.now(), author_id, city_post, image_url, [], new Date()]);
             const post = NewPost.rows[0]
             return res.status(200).json({message: "Пост успешно создан!", post: post});
         } catch (error) {
@@ -59,18 +56,16 @@ class PostController {
                 context,
                 city,
                 imageUrl,
-                tags
             } = req.body;
             if (title.length == 0) title = null;
             if (context.length == 0) context = null;
             if (imageUrl.length == 0) imageUrl = null;
             if (tags.length == 0) tags = null;
-            const UpdatePost = await bd.query("UPDATE post SET title = $1, context = $2, image = $3, city_post = $4, tags = $5 WHERE idPost = $6 RETURNING *", [
+            const UpdatePost = await bd.query("UPDATE post SET title = $1, context = $2, image = $3, city_post = $4 WHERE idPost = $5 RETURNING *", [
                 title,
                 context,
                 imageUrl,
                 city,
-                tags.split(","),
                 req.params.id
             ]);
             return res.status(200).json({post: UpdatePost.rows[0]})
@@ -169,6 +164,16 @@ class PostController {
             return res.status(200).json({isLiked: true, likeCount: UpdatePost.rows[0].likes.length})
         } catch (error) {
             console.log(error);
+            return res.status(400).json({message: "Непредвиденная ошибка!"})
+        }
+    }
+    async findCity(req, res){
+        try {
+            const Post = await bd.query("SELECT post.*, person.*, COUNT(comment.*) AS commentcount FROM post JOIN person" +
+                " ON post.author_id = person.id LEFT JOIN comment ON comment.idpost = post.idpost WHERE city_post = $1 GROUP BY post.idpost, person.id;", [req.params.id]);
+            return res.status(200).json(Post.rows);
+        } catch (e) {
+            console.log(e);
             return res.status(400).json({message: "Непредвиденная ошибка!"})
         }
     }

@@ -11,7 +11,7 @@ import SendIcon from '@mui/icons-material/Send';
 import {observer} from "mobx-react-lite";
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import {hot} from "react-hot-loader/root";
-import {Text} from "../text";
+import {AuthHeader} from "../AuthHeader";
 import {Header} from "../Header";
 import Errors from "../Errors/errors";
 import SaveIcon from '@mui/icons-material/Save';
@@ -24,7 +24,6 @@ const AddPost = observer(() => {
     const [context, setContext] = React.useState('');
     const [title, setTitle] = useState('')
     const [city, setCity] = useState('')
-    const [tags, setTags] = useState('')
     const [imageUrl, setimageUrl] = useState('')
     const inputFileRef = useRef(null)
     const handleChangeFile = async (event) => {
@@ -48,7 +47,6 @@ const AddPost = observer(() => {
             context,
             city,
             imageUrl,
-            tags
         }).then(res => {
             window.location.replace(`${CLIENT_URL}/post/${id}`)
         }).catch((error) => {
@@ -63,7 +61,6 @@ const AddPost = observer(() => {
             Number(store.user.id),
             city,
             imageUrl,
-            tags,
         )
     }
 
@@ -78,7 +75,6 @@ const AddPost = observer(() => {
                 setContext(res.data.post.context)
                 setCity(res.data.post.city_post)
                 setimageUrl(res.data.post.image)
-                setTags(res.data.post.tags.join(","))
             })
 
         }
@@ -101,10 +97,19 @@ const AddPost = observer(() => {
         }),
         [],
     );
+    if(!store.isAuth){
+        return (
+            <>
+                <Header/>
+                <h2 className={"text-center text-3xl font-mont mt-10"}>Упс... У вас пока что нет сюда доступа :(</h2>
+                <h2 className={"text-center font-mont mt-2"}>Войдите в аккаунт или зарегистрируйтесь!</h2>
 
+            </>
+        )
+    }
     return (
     <>
-        {store.isAuth ? <Text/> : <Header/>}
+        {store.isAuth ? <AuthHeader/> : <Header/>}
 
         <Paper style={{ padding: 30, width: "90%" }} className={styles.center}>
 
@@ -136,14 +141,6 @@ const AddPost = observer(() => {
                 onChange={e => setCity(e.target.value)}
                 variant="standard"
                 placeholder="Город..."
-                fullWidth />
-            <br />
-            <TextField
-                classes={{ root: styles.tags }}
-                value={tags}
-                onChange={e => setTags(e.target.value)}
-                variant="standard"
-                placeholder="Тэги..."
                 fullWidth />
             <br />
             <SimpleMdeReact className={styles.editor } value={context} onChange={onChange} options={options} />

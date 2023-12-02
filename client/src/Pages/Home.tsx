@@ -1,13 +1,14 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Header} from "./Header/index"
-import {Text} from "./text"
-import Footer from "./footer";
+import {Header} from "../components/Header"
+import {AuthHeader} from "../components/AuthHeader"
+import Footer from "../components/footer";
 import {observer} from "mobx-react-lite";
 import {Link} from "react-router-dom"
 import {Context} from "../index";
 import {UserDTO} from "../models/response/UserDTO";
-import Carusel from "./carusel/Carusel";
-import styles from "./Login.module.css"
+import Carusel from "../components/carusel/Carusel";
+import styles from "../components/Login.module.css"
+import {PostSkeleton} from "../components/Post/Post/Skeleton";
 export const Home = () => {
     const {store} = useContext(Context);
     const [users, setUsers] = useState<UserDTO[]>([]);
@@ -23,9 +24,11 @@ export const Home = () => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    if(store.isLoading == true) return (<PostSkeleton/>)
+
     return (
         <div className={"items-stretch"}>
-            {store.isAuth ? <Text/> : <Header/>}
+            {store.isAuth ? <AuthHeader/> : <Header/>}
             <div className="container">
                 <div className="row">
                     <div className={`col-12 align-self-center ${styles.corusel}`}>

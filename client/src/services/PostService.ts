@@ -3,14 +3,13 @@ import {AxiosResponse} from "axios"
 import {PostResponse} from "../models/response/PostResponse";
 export default class PostService {
     static async create(title: string, context:string,
-                        author_id:number, city_post:string, image_url:string, tags: string): Promise<AxiosResponse<PostResponse>>{
+                        author_id:number, city_post:string, image_url:string,): Promise<AxiosResponse<PostResponse>>{
         return await $api.post<PostResponse>("post/create", {
             title,
             context,
             author_id,
             city_post,
             image_url,
-            tags
         })
     }
     static async getPost(id: number): Promise<AxiosResponse>{

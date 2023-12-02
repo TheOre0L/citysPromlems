@@ -28,7 +28,6 @@ const Post = ({
                        viewCount,
                        store,
                        commentsCount,
-                       tags,
                        children,
                        isFullPost,
                        isLoading,
@@ -79,7 +78,7 @@ const Post = ({
             </h2>
             <ul className={styles.tags}>
                   <li key={city_post}>
-                    <Link to={`/city/${city_post}`}>#{city_post}</Link>
+                    <Link to={`city/${city_post}`}>#{city_post}</Link>
                   </li>
             </ul>
             {children && <div className={styles.content}>{children}</div>}

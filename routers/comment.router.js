@@ -11,6 +11,6 @@ const adminCheck = require('../middlewares/adminCheck.middlewares')
 router.post("/add", urlencodedParser, jsonParser, authMiddleware, commentController.addComment)
 router.delete("/delete/:id", urlencodedParser, jsonParser, authMiddleware, commentController.deleteComment)
 router.put("/edit/:id", urlencodedParser, jsonParser, authMiddleware, commentController.editComment)
-router.post("/all", urlencodedParser, jsonParser, authMiddleware, commentController.getComment)
+router.post("/all", urlencodedParser, jsonParser, commentController.getComment)
 
 module.exports = router;

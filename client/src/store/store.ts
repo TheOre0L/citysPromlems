@@ -20,6 +20,7 @@ export default class Store {
     public error: string = "";
     public is_error = false;
     public isAuth = false;
+    public isActiv = false;
     public isLoading = false;
     constructor() {
         makeAutoObservable(this);
@@ -27,6 +28,9 @@ export default class Store {
     }
     setNewPost(newpost: any){
         this.post = newpost;
+    }
+    setActivated(activated: boolean){
+        this.isActiv = activated;
     }
     async setAllPost(allposts: any){
         this.allPosts = await allposts;
@@ -40,7 +44,7 @@ export default class Store {
     }
     async setUser(user: UserDTO) {
         this.user = await user;
-        localStorage.setItem("userId", String(this.user.id));
+        await localStorage.setItem("userId", String(this.user.id));
     }
     setLoading(bool: boolean) {
         this.isLoading = bool;
@@ -53,6 +57,7 @@ export default class Store {
         this.userR = user
     }
     async login(login: string, password:string){
+        this.setLoading(true);
         try {
             await AuthService.login(login, password)
                 .then(response => {
@@ -66,10 +71,13 @@ export default class Store {
             console.error(e.response.data.message);
             this.setError(e.response.data.message, true);
             //window.location.replace("/login")
+        }  finally {
+            this.setLoading(false);
         }
 
     }
     async registration(login: string, password:string, name:string, surname:string, email:string, city:string){
+        this.setLoading(true);
         try {
             const response = await AuthService.registration(login, password, name, surname, email, city);
             localStorage.setItem('token', response.data.accessToken);
@@ -80,10 +88,13 @@ export default class Store {
         } catch (e: any) {
             console.error(e.response.data.message);
             this.setError(e.response.data.message, true);
+        }  finally {
+            this.setLoading(false);
         }
 
     }
     async getUser(id: number){
+        this.setLoading(true);
         try {
             const response = await UserServices.fetchUser(id);
             runInAction(() => {
@@ -94,10 +105,13 @@ export default class Store {
         } catch (e: any) {
             console.error(e.response.data.message);
             this.setError(e.response.data.message, true);
+        }  finally {
+            this.setLoading(false);
         }
 
     }
     async logout() {
+        this.setLoading(true);
         try {
             const response = await AuthService.logout();
             await localStorage.removeItem('token');
@@ -107,6 +121,8 @@ export default class Store {
         } catch (e: any) {
             console.error(e.response.data.message);
             this.setError(e.response.data.message, true);
+        }  finally {
+            this.setLoading(false);
         }
     }
 
@@ -125,24 +141,27 @@ export default class Store {
             this.setLoading(false);
         }
     }
-    async createPost(title: string, context:string, author_id:number, city_post:string, image_url:string, tags: string){
+    async createPost(title: string, context:string, author_id:number, city_post:string, image_url:string,){
+        this.setLoading(true);
         try {
             const response = await PostService.create(
                 title,
                 context,
                 author_id,
                 city_post,
-                image_url,
-                tags
+                image_url
             );
             this.setNewPost(response.data.post);
             window.location.replace('/posts')
         } catch (e: any) {
             console.error(e.response.data.message);
             this.setError(e.response.data.message, true);
+        }  finally {
+            this.setLoading(false);
         }
     }
     async deletePost(id:number){
+        this.setLoading(true);
         try {
             const response = await PostService.deletePost(id);
             window.location.replace('/posts')
@@ -151,6 +170,8 @@ export default class Store {
                 console.error(e.response.data.message);
                 this.setError(e.response.data.message, true);
             }
+        }  finally {
+            this.setLoading(false);
         }
     }
     async getAllPosts(){

@@ -1,10 +1,10 @@
 import React, {useContext, useEffect, useState} from "react";
 import Markdown from 'react-markdown'
-import Post from "./Post/Post";
-import { Index } from "./AddComment";
-import CommentsBlock from "./CommentsBlock";
-import {Text} from "./text";
-import {Header} from "./Header";
+import Post from "../components/Post/Post";
+import { Index } from "../components/AddComment";
+import CommentsBlock from "../components/CommentsBlock";
+import {AuthHeader} from "../components/AuthHeader";
+import {Header} from "../components/Header";
 import {Context} from "../index";
 import {observer} from "mobx-react-lite";
 import {$api, API_URL} from "../http";
@@ -12,6 +12,7 @@ import {CLIENT_URL} from "../App";
 import {toJS} from "mobx";
 import {useParams} from "react-router-dom";
 import {hot} from "react-hot-loader/root";
+import Footer from "../components/footer";
 
 
 const FullPost = observer(() => {
@@ -30,6 +31,7 @@ const FullPost = observer(() => {
         }).then(async (res) => {
             await setData(res.data)
             setIsLoading(false)
+            document.title = `Публикация #${id}`
         })
         $api.post(`comment/all`, {
             idpost: id
@@ -42,10 +44,22 @@ const FullPost = observer(() => {
     if(isLoading || isLoadingComm){
         return <Post isLoading={isLoading}/>
     }
+    if(!store.isAuth){
+        return (
+            <>
+                <Header/>
+                <h2 className={"text-center text-3xl font-mont mt-10"}>
+                    <p className={"text-8xl mb-5"}>😥</p>
+                    Упс... У вас пока что нет сюда доступа :(
+                </h2>
+                <h2 className={"text-center font-mont mt-2"}>Войдите в аккаунт или зарегистрируйтесь!</h2>
 
+            </>
+        )
+    }
   return (
     <>
-        {store.isAuth ? <Text/> : <Header/>}
+        {store.isAuth ? <AuthHeader/> : <Header/>}
       <Post
         id={data.post.idpost}
         title={data.post.title}
@@ -60,20 +74,24 @@ const FullPost = observer(() => {
         LikeCount={data.post.likes.length}
         viewCount={data.post.viewcount}
         commentsCount={data.post.count}
-        tags={[...data.post.tags]}
         isLiked={data.isLiked}
         isFullPost
       >
         <Markdown children={data.post.context}/>
       </Post>
-        {console.log([...comment])}
-      <CommentsBlock
-        items={[...comment]}
-        store={store}
-        isLoading={isLoadingComm}
-      >
-        <Index />
-      </CommentsBlock>
+
+                <CommentsBlock
+                    items={[...comment]}
+                    store={store}
+                    isLoading={isLoadingComm}
+                >
+                    {store.isAuth ?  <>
+                    <Index />
+                        </> :
+                        null
+                    }
+                </CommentsBlock>
+        <Footer/>
     </>
   );
 });

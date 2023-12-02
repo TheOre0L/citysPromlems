@@ -1,12 +1,12 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Context} from "../index";
-import {Text} from "./text";
-import {Header} from "./Header";
+import {AuthHeader} from "../components/AuthHeader";
+import {Header} from "../components/Header";
 import {hot} from "react-hot-loader/root";
 import {observer} from "mobx-react-lite";
 import Paper from '@mui/material/Paper';
-import styles from './AddPosts/AddPost.module.scss';
-import stylesL from "./Login.module.css";
+import styles from '../components/AddPosts/AddPost.module.scss';
+import stylesL from "../components/Login.module.css";
 import $api, {API_URL} from "../http";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -52,7 +52,7 @@ const Settings = observer(() => {
 
     return (
         <>
-            {store.isAuth ? (<Text/>) : (<Header/>)}
+            {store.isAuth ? (<AuthHeader/>) : (<Header/>)}
             <Paper  classes={{ root: stylesL.root }}   >
             <input ref={inputFileRef} type="file" onChange={handleChangeFile} hidden />
             <button onClick={() => { // @ts-ignore
