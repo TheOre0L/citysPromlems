@@ -8,7 +8,7 @@ const {validationResult} = require('express-validator');
 const {userValidation} = require("../validate/registrationValid")
 class UserController {
 
-    async registration (req, res, next){
+    async registration (req, res){
         try{
             function validateEmail(email) {
                 let re = /\S+@\S+\.\S+/;

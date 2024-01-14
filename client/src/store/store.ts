@@ -42,9 +42,14 @@ export default class Store {
     setAuth(bool: boolean) {
         this.isAuth = bool;
     }
-    async setUser(user: UserDTO) {
-        this.user = await user;
-        await localStorage.setItem("userId", String(this.user.id));
+    async setUser(userMe: UserDTO) {
+        this.user = userMe;
+        console.log(userMe); // добавьте эту строку для проверки содержимого userMe в консоли
+        if(userMe && userMe.id) {
+            localStorage.setItem("userId", `${userMe.id}`)
+        } else {
+            console.error('User id is undefined');
+        }
     }
     setLoading(bool: boolean) {
         this.isLoading = bool;
@@ -57,41 +62,29 @@ export default class Store {
         this.userR = user
     }
     async login(login: string, password:string){
-        this.setLoading(true);
         try {
-            await AuthService.login(login, password)
-                .then(response => {
-                    localStorage.setItem('token', response.data.accessToken)
-                    this.setAuth(true);
-                    this.setUser(response.data.user)
-                    window.location.replace("/")
-                })
-            //console.log(response)
+            const response = await AuthService.login(login, password)
+            localStorage.setItem('token', response.data.accessToken)
+            await this.setUser(response.data.user)
+            this.setAuth(true);
+            window.location.replace("/")
         } catch (e: any) {
             console.error(e.response.data.message);
             this.setError(e.response.data.message, true);
-            //window.location.replace("/login")
-        }  finally {
-            this.setLoading(false);
         }
-
     }
     async registration(login: string, password:string, name:string, surname:string, email:string, city:string){
-        this.setLoading(true);
         try {
             const response = await AuthService.registration(login, password, name, surname, email, city);
             localStorage.setItem('token', response.data.accessToken);
             //localStorage.setItem("userid", `${response.data.user.id}`);
             this.setAuth(true);
             this.setUser(response.data.user)
-            window.location.replace("/login")
+            window.location.replace("/")
         } catch (e: any) {
             console.error(e.response.data.message);
             this.setError(e.response.data.message, true);
-        }  finally {
-            this.setLoading(false);
         }
-
     }
     async getUser(id: number){
         this.setLoading(true);
@@ -115,6 +108,7 @@ export default class Store {
         try {
             const response = await AuthService.logout();
             await localStorage.removeItem('token');
+            await localStorage.removeItem('userId');
             await this.setAuth(false);
             await this.setUser({} as UserDTO);
             window.location.replace("/")
@@ -132,6 +126,7 @@ export default class Store {
             const response = await axios.get<AuthResponse>(`${API_URL}/api/refresh`, {withCredentials: true})
             console.log(response);
             localStorage.setItem('token', response.data.accessToken);
+            localStorage.setItem('userId', `${response.data.user.id}`);
             this.setAuth(true);
             this.setUser(response.data.user);
         } catch (e: any) {

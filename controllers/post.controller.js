@@ -60,7 +60,6 @@ class PostController {
             if (title.length == 0) title = null;
             if (context.length == 0) context = null;
             if (imageUrl.length == 0) imageUrl = null;
-            if (tags.length == 0) tags = null;
             const UpdatePost = await bd.query("UPDATE post SET title = $1, context = $2, image = $3, city_post = $4 WHERE idPost = $5 RETURNING *", [
                 title,
                 context,

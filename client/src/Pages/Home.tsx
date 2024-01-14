@@ -17,7 +17,9 @@ export const Home = () => {
         document.title = 'Главная страница | CITY Problems';
         if (localStorage.getItem('token')) {
             store.checkAuth()
+
         }
+
     }, [])
     const [show, setShow] = useState(false);
 

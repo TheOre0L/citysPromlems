@@ -78,7 +78,7 @@ const Post = ({
             </h2>
             <ul className={styles.tags}>
                   <li key={city_post}>
-                    <Link to={`city/${city_post}`}>#{city_post}</Link>
+                    <Link to={`/posts/city/${city_post}`}>#{city_post}</Link>
                   </li>
             </ul>
             {children && <div className={styles.content}>{children}</div>}

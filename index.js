@@ -31,7 +31,7 @@ const storage = multer.diskStorage({
     }
 })
 const upload = multer({storage})
-app.post("/upload", authMiddleware, isActive, upload.single("image"), (req,res) => {
+app.post("/upload", authMiddleware, upload.single("image"), (req,res) => {
     res.status(200).json({
         url: `/uploads/${req.file.originalname}`
     })
