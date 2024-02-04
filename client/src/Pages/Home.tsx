@@ -9,6 +9,7 @@ import {UserDTO} from "../models/response/UserDTO";
 import Carusel from "../components/carusel/Carusel";
 import styles from "../components/Login.module.css"
 import {PostSkeleton} from "../components/Post/Post/Skeleton";
+import CustomizedSnackbars from "../components/Message/notification_msg";
 export const Home = () => {
     const {store} = useContext(Context);
     const [users, setUsers] = useState<UserDTO[]>([]);
@@ -32,6 +33,7 @@ export const Home = () => {
         <div className={"items-stretch"}>
             {store.isAuth ? <AuthHeader/> : <Header/>}
             <div className="container">
+                {store.is_message ? <CustomizedSnackbars text={store.message} is_msg = {store.is_message} color={store.color_msg}/>: null}
                 <div className="row">
                     <div className={`col-12 align-self-center ${styles.corusel}`}>
                         <Carusel/>

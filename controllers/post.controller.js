@@ -14,7 +14,7 @@ class PostController {
             } = req.body;
             if (title.length == 0) title = null;
             if (context.length == 0) context = null;
-            if (image_url.length == 0) image_url = null;
+            if (image_url.length == 0) image_url = "/uploads/noimage.png";
             if (author_id.length == 0) author_id = null;
             const FindPostThisUser = await bd.query("SELECT date_for_create FROM post WHERE author_id = $1", [author_id]);
             if (FindPostThisUser.rowCount != 0) {
@@ -59,7 +59,7 @@ class PostController {
             } = req.body;
             if (title.length == 0) title = null;
             if (context.length == 0) context = null;
-            if (imageUrl.length == 0) imageUrl = null;
+            if (imageUrl.length == 0) imageUrl = "/uploads/noimage.png";
             const UpdatePost = await bd.query("UPDATE post SET title = $1, context = $2, image = $3, city_post = $4 WHERE idPost = $5 RETURNING *", [
                 title,
                 context,

@@ -13,6 +13,7 @@ import {toJS} from "mobx";
 import {useParams} from "react-router-dom";
 import {hot} from "react-hot-loader/root";
 import Footer from "../components/footer";
+import CustomizedSnackbars from "../components/Message/notification_msg";
 
 
 const FullPost = observer(() => {
@@ -60,6 +61,7 @@ const FullPost = observer(() => {
   return (
     <>
         {store.isAuth ? <AuthHeader/> : <Header/>}
+
       <Post
         id={data.post.idpost}
         title={data.post.title}

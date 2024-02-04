@@ -17,7 +17,8 @@ import Errors from "../Errors/errors";
 import SaveIcon from '@mui/icons-material/Save';
 import {$api, API_URL} from "../../http/index";
 import {CLIENT_URL} from "../../App";
-
+import CustomizedSnackbars from "../Message/notification_msg";
+import PreviewPost from "../previewPost/previewPost"
 const AddPost = observer(() => {
     const {id} = useParams();
     const {store} = useContext(Context);
@@ -48,7 +49,8 @@ const AddPost = observer(() => {
             city,
             imageUrl,
         }).then(res => {
-            window.location.replace(`${CLIENT_URL}/post/${id}`)
+            store.setMsg(true, `Пост успешно обновлен, через 4 секунды вы будете перенаправленны на него!`, "success")
+            setTimeout(() => {window.location.replace(`${CLIENT_URL}/post/${id}`)}, 4000)
         }).catch((error) => {
             console.log(error)
             alert("При сохранении произошла ошибка")
@@ -110,9 +112,8 @@ const AddPost = observer(() => {
     return (
     <>
         {store.isAuth ? <AuthHeader/> : <Header/>}
-
+        {store.is_message ? <CustomizedSnackbars text={store.message} is_msg = {store.is_message} color={store.color_msg}/>: null}
         <Paper style={{ padding: 30, width: "90%" }} className={styles.center}>
-
             <Button onClick={() => {inputFileRef.current.click()}} variant="outlined" size="large">
                 <DriveFolderUploadIcon className={"mr-2"}/>
                 Загрузить картинку
@@ -147,8 +148,9 @@ const AddPost = observer(() => {
             <div className={styles.buttons}>
                 {isEditing ? (
                     <Button size="large" variant="contained" onClick={updatePost}>
-                        <SaveIcon/>
+
                         Сохранить
+                        <SaveIcon className={"ml-2"}/>
                     </Button>
                 ):(
                     <Button size="large" variant="contained" onClick={handleUpload}>
@@ -156,6 +158,7 @@ const AddPost = observer(() => {
                         <SendIcon className={"ml-2"}/>
                     </Button>
                 )}
+                <PreviewPost title_view = {title} img_view={imageUrl} city={city} text={context}/>
 
                 <a href="/">
                     <Button size="large">Отмена</Button>

@@ -5,8 +5,9 @@ import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import {makeAutoObservable, toJS} from "mobx";
 import $api, {API_URL} from "../http";
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 const Profile = () => {
+    const {store} = useContext(Context);
     const [datas, setData] = useState<any>();
     const [isLoading, setLoading] = useState(true);
     const {id} = useParams();
@@ -69,6 +70,21 @@ const Profile = () => {
                     <div className=" ">
                         <div className="text-center px-14">
                             <h2 className="text-gray-800 text-3xl font-bold">{`${datas.user.name} ${datas.user.surname}`}</h2>
+                            {datas.user.role == "ADMIN" ?
+                            <>
+                                {store.user.id == datas.user.id ?
+                                    <Link to={"/admin"} className="text-yellow-600 mt-2">{`@Администратор`}</Link>
+                                    :
+                                    <p className="text-yellow-600 mt-2">{`@Администратор`}</p>
+                                }
+
+                            </>
+                                :
+                            <>
+                                <p className="text-gray-400 mt-2">{`@Пользователь`}</p>
+                            </>
+                            }
+
                             <p className="text-gray-400 mt-2">{`${datas.user.city}`}</p>
                             {
                                 datas.user.is_activated ? (<p className="text-gray-400 mt-2">{`Аккаунт активирован`}</p>) : (<p className="text-gray-400 mt-2">{`Аккаунт не активирован`}</p>)

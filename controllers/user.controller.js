@@ -35,10 +35,10 @@ class UserController {
                 [login, hashPassword, name, surname, new Date(), email, activationLink, city])
             await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`, login);
             const tokens = await tokenService.generateTokens({id: candidate.rows[0].id, email: candidate.rows[0].email, role: candidate.rows[0].role});
-            const userDto = candidate.rows[0];
-            await tokenService.saveToken(userDto.id, tokens.refreshToken);
+            const user = candidate.rows[0];
+            await tokenService.saveToken(user.id, tokens.refreshToken);
             res.cookie('refreshToken', tokens.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
-            return res.json({message:"Успешная регистрация!", ...tokens, userDto})
+            return res.json({message:"Успешная регистрация!", ...tokens, user})
         } catch (e) {
             console.log(e)
             if(e.code == '23505'){
@@ -69,19 +69,19 @@ class UserController {
             const {
                 login,
                 password} = req.body;
-            const user = await bd.query("SELECT * FROM person WHERE login = $1", [login])
-            const userDto = user.rows[0];
-            if (user.rowCount == 0) {
+            const userDto = await bd.query("SELECT * FROM person WHERE login = $1", [login])
+            const user = userDto.rows[0];
+            if (!user) {
                 return res.status(400).json({message:"Неверный логин или пароль"})
             }
-            const isPassEquals = await bcrypt.compare(password, userDto.password);
+            const isPassEquals = await bcrypt.compare(password, user.password);
             if (!isPassEquals) {
                 return res.status(400).json({message:"Неверный логин или пароль"})
             }
-            const tokens = tokenService.generateTokens({...userDto});
-            await tokenService.saveToken(userDto.id, tokens.refreshToken);
+            const tokens = tokenService.generateTokens({...user});
+            await tokenService.saveToken(user.id, tokens.refreshToken);
             res.cookie('refreshToken', tokens.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
-            return res.status(200).json({message:"Успешный вход в аккаунт!", tokens, userDto})
+            return res.status(200).json({message:"Успешный вход в аккаунт!", tokens, user})
         } catch (e) {
             return res.json(e)
         }
@@ -113,7 +113,12 @@ class UserController {
             const id = req.params.id;
             const userDto = await bd.query("Select * From person where id = $1", [id])
             const user = userDto.rows[0];
-            return res.json({message:"Пользователь найден!", user})
+            if(user){
+                return res.json({message:"Пользователь найден!", user})
+            } else {
+                return res.status(404).json({message:"Пользователь не найден!"})
+            }
+
         } catch (e) {
             return res.json(e)
         }
@@ -174,6 +179,29 @@ class UserController {
             const tokens = tokenService.generateTokens({user});
             await tokenService.saveToken(user.id, tokens.refreshToken);
             return res.json({...tokens, user})
+        } catch (e) {
+            console.log(e)
+            return res.json(e)
+        }
+    }
+    async adminAdd(req, res) {
+        try{
+            const {uid} = req.body;
+            console.log(req.body)
+            const updateUser = await bd.query("UPDATE person set role = 'ADMIN' where id = $1 RETURNING *", [uid]);
+            const user = updateUser.rows[0];
+            res.status(200).json({message:`Пользователь #${uid} успешно назначен администратором!`, user: user})
+        } catch (e) {
+            console.log(e)
+            return res.json(e)
+        }
+    }
+    async adminDelete(req, res) {
+        try{
+            const {uid} = req.body;
+            const updateUser = await bd.query("UPDATE person set role = 'USER' where id = $1 RETURNING *", [uid]);
+            const user = updateUser.rows[0];
+            res.status(200).json({message:`Пользователь #${uid} успешно разжалован!`, user: user})
         } catch (e) {
             console.log(e)
             return res.json(e)

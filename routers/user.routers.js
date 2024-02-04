@@ -6,11 +6,13 @@ const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 const jsonParser = bodyParser.json()
 const authMiddleware = require('../middlewares/auth.middelewares');
-
+const adminCheck = require('../middlewares/adminCheck.middlewares');
 router.post('/registration',
     urlencodedParser,
     jsonParser,
     userController.registration);
+router.put('/admin/add', urlencodedParser, jsonParser, authMiddleware, adminCheck, userController.adminAdd)
+router.put('/admin/delete', urlencodedParser, jsonParser, authMiddleware, adminCheck, userController.adminDelete)
 router.post('/login', urlencodedParser ,jsonParser, userController.login)
 router.get('/users', authMiddleware,userController.getUsers)
 router.get('/activate/:activation_link', userController.activation)

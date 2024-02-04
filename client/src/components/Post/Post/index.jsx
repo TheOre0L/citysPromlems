@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import clsx from 'clsx';
 import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Clear';
+import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CommentIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -17,6 +17,7 @@ import $api from "../../../http";
 import {observer} from "mobx-react-lite";
 import {hot} from "react-hot-loader/root";
 import {Link} from "react-router-dom";
+import Tooltip from '@mui/material/Tooltip';
 const Post = ({
                        id,
                        title,
@@ -33,6 +34,7 @@ const Post = ({
                        isLoading,
                        isLiked,
                        isEditable,
+                        isPreview
                      }) => {
     const [isLike, setIsLike] = useState(isLiked)
     const [likeCount, setLikeCount] = useState(LikeCount)
@@ -54,13 +56,17 @@ const Post = ({
             <div className={styles.editButtons}>
               <Link to={`/post/${id}/edit`}>
                   {console.log(id)}
-                <IconButton color="primary">
-                  <EditIcon />
-                </IconButton>
+                  <Tooltip title="Изменить пост">
+                    <IconButton color="primary">
+                      <EditIcon />
+                    </IconButton>
+                  </Tooltip>
               </Link>
-              <IconButton onClick={() => {store.deletePost(id)}} color="secondary">
-                <DeleteIcon />
-              </IconButton>
+                  <Tooltip title="Удалить пост">
+                      <IconButton  onClick={() => {store.deletePost(id)}} color="secondary">
+                          <DeleteIcon />
+                      </IconButton>
+                  </Tooltip>
             </div>
         )}
         {imageUrl && (
@@ -78,13 +84,15 @@ const Post = ({
             </h2>
             <ul className={styles.tags}>
                   <li key={city_post}>
-                    <Link to={`/posts/city/${city_post}`}>#{city_post}</Link>
+                      {isPreview ? `#${city_post}`:
+                          <Link to={`/posts/city/${city_post}`}>#{city_post}</Link>
+                      }
                   </li>
             </ul>
             {children && <div className={styles.content}>{children}</div>}
             <ul className={styles.postDetails}>
                 <li>
-                    {isFullPost ?
+                    {isFullPost && !isPreview ?
                         <>
                             <button onClick={onClickLike} className={'flex hover:text-pink-700'}>
                                 {isLike ? <FavoriteIcon className={'flex text-pink-700'}/> : <FavoriteBorderIcon className={'flex'}/>}
@@ -104,7 +112,7 @@ const Post = ({
               <li>
                 <CommentIcon />
                 <span>{commentsCount}</span>
-                  {isFullPost ? <BasicModal/> : null}
+                  {isFullPost && !isPreview  ? <BasicModal/> : null}
               </li>
             </ul>
           </div>

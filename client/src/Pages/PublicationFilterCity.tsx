@@ -52,7 +52,7 @@ const PublicationCity : FC = observer( () => {
             {posts.length == 0 ? <h1 className={"text-center text-3xl font-mont"}>Постов нет :(</h1> : null}
             <>
                 <h2 className={"text-center text-3xl font-mont mb-8"}>
-                    <h2 className={"text-center  font-mont "}>Публикации с городом {id}</h2>
+                    <h2 className={"text-center  font-mont "}>Публикации по городу {id}</h2>
                 </h2>
             </>
 

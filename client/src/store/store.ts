@@ -18,10 +18,13 @@ export default class Store {
     public author = {} as UserDTO
     public allPosts:any = [];
     public error: string = "";
-    public is_error = false;
-    public isAuth = false;
-    public isActiv = false;
-    public isLoading = false;
+    public is_error:boolean = false;
+    public isAuth:boolean = false;
+    public isActiv:boolean = false;
+    public isLoading:boolean = false;
+    public is_message:boolean = false;
+    public message:string = "";
+    public color_msg:string = "";
     constructor() {
         makeAutoObservable(this);
 
@@ -44,12 +47,6 @@ export default class Store {
     }
     async setUser(userMe: UserDTO) {
         this.user = userMe;
-        console.log(userMe); // добавьте эту строку для проверки содержимого userMe в консоли
-        if(userMe && userMe.id) {
-            localStorage.setItem("userId", `${userMe.id}`)
-        } else {
-            console.error('User id is undefined');
-        }
     }
     setLoading(bool: boolean) {
         this.isLoading = bool;
@@ -61,13 +58,19 @@ export default class Store {
     setNoMySelf(user: UserDTO) {
         this.userR = user
     }
+    setMsg(isMsg: boolean, msg: string, color: string){
+        this.is_message = isMsg;
+        this.message = msg;
+        this.color_msg = color;
+    }
     async login(login: string, password:string){
         try {
             const response = await AuthService.login(login, password)
             localStorage.setItem('token', response.data.accessToken)
+            localStorage.setItem("userId", `${response.data.user.id}`)
             await this.setUser(response.data.user)
             this.setAuth(true);
-            window.location.replace("/")
+            this.setMsg(true, "Успешная авторизация!", "success")
         } catch (e: any) {
             console.error(e.response.data.message);
             this.setError(e.response.data.message, true);
@@ -77,10 +80,10 @@ export default class Store {
         try {
             const response = await AuthService.registration(login, password, name, surname, email, city);
             localStorage.setItem('token', response.data.accessToken);
-            //localStorage.setItem("userid", `${response.data.user.id}`);
+            localStorage.setItem("userId", `${response.data.user.id}`);
             this.setAuth(true);
             this.setUser(response.data.user)
-            window.location.replace("/")
+            this.setMsg(true, "Успешная регистрация!", "success")
         } catch (e: any) {
             console.error(e.response.data.message);
             this.setError(e.response.data.message, true);
@@ -111,7 +114,7 @@ export default class Store {
             await localStorage.removeItem('userId');
             await this.setAuth(false);
             await this.setUser({} as UserDTO);
-            window.location.replace("/")
+            this.setMsg(true, "Успешный выход из аккаунта!", "warning")
         } catch (e: any) {
             console.error(e.response.data.message);
             this.setError(e.response.data.message, true);
@@ -147,12 +150,17 @@ export default class Store {
                 image_url
             );
             this.setNewPost(response.data.post);
-            window.location.replace('/posts')
+            this.setMsg(true, `Пост успешно создан, через 4 секунды вы будете перенаправленны на него!`, "success")
+            setTimeout(() => {
+                window.location.replace(`/post/${response.data.post.idpost}`)
+            }, 4000)
+
         } catch (e: any) {
             console.error(e.response.data.message);
             this.setError(e.response.data.message, true);
         }  finally {
             this.setLoading(false);
+
         }
     }
     async deletePost(id:number){
@@ -166,36 +174,6 @@ export default class Store {
                 this.setError(e.response.data.message, true);
             }
         }  finally {
-            this.setLoading(false);
-        }
-    }
-    async getAllPosts(){
-        this.setLoading(true);
-        try {
-            const response = await PostService.getAllPosts().then((res) => {
-                this.setAllPost(res.data);
-            })
-        } catch (e: any) {
-            if(e){
-                console.error(e.response.data.message);
-                this.setError(e.response.data.message, true);
-            }
-        } finally {
-            this.setLoading(false);
-        }
-    }
-    async getPost(id: number){
-        this.setLoading(true);
-        try {
-            const response = await PostService.getPost(id);
-            runInAction(() => {
-                this.setPost(toJS(response.data.post), toJS(response.data.author));
-            })
-        } catch (e: any) {
-            console.error(e.response.data.message);
-            this.setError(e.response.data.message, true);
-        }
-        finally {
             this.setLoading(false);
         }
     }

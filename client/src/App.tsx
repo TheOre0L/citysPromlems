@@ -7,6 +7,7 @@ import Publication from "./Pages/Publication";
 import FullPost from "./Pages/FullPost";
 import Settings from "./Pages/settings";
 import PublicationFilterCity from "./Pages/PublicationFilterCity";
+import AdminPanel from "./Pages/AdminPanel";
 export const CLIENT_URL = "http://localhost:3000"
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/posts/city/:id" element={<PublicationFilterCity/>}/>
             <Route path="/post/:id" element={<FullPost/>}/>
             <Route path="/post/:id/edit" element={<AddPost/>}/>
+            <Route path="/admin" element={<AdminPanel/>}/>
             <Route path="/post/create" element={<AddPost/>}/>
         </Routes>
       </>
