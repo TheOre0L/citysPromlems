@@ -16,16 +16,17 @@ class PostController {
             if (context.length == 0) context = null;
             if (image_url.length == 0) image_url = "/uploads/noimage.png";
             if (author_id.length == 0) author_id = null;
-            const FindPostThisUser = await bd.query("SELECT date_for_create FROM post WHERE author_id = $1", [author_id]);
-            if (FindPostThisUser.rowCount != 0) {
-                if (FindPostThisUser.rows[0].date_for_create !== null && 10800000 - (Date.now() - FindPostThisUser.rows[0].date_for_create) > 0) {
+            const FindPostThisUser = await bd.query("SELECT date_create_last_post FROM person WHERE id = $1", [author_id]);
+            if (FindPostThisUser.rows[0]  || !FindPostThisUser.rows[0].date_create_last_post) {
+                if (FindPostThisUser.rows[0].date_create_last_post !== null && 10800000 - (Date.now() - FindPostThisUser.rows[0].date_create_last_post) > 0) {
                     return res.status(400).json({
-                        message: `Вы уже публиковали пост! Следующий можно будет опубликовать через ${humanize(10800000 - (Date.now() - FindPostThisUser.rows[0].date_for_create), {language: 'ru'})}`
+                        message: `Вы уже публиковали пост! Следующий можно будет опубликовать через ${humanize(10800000 - (Date.now() - FindPostThisUser.rows[0].date_create_last_post), {language: 'ru'})}`
                     });
                 }
             }
-            const NewPost = await bd.query("INSERT INTO post (title, context, date_for_create, author_id, city_post, image, likes, createdat) VALUES" +
-                "($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *", [title, context, Date.now(), author_id, city_post, image_url, [], new Date()]);
+            const NewPost = await bd.query("INSERT INTO post (title, context, author_id, city_post, image, likes, createdat) VALUES" +
+                "($1, $2, $3, $4, $5, $6, $7) RETURNING *", [title, context, author_id, city_post, image_url, [], new Date()]);
+            const updateCreateDate = await bd.query("UPDATE person SET date_create_last_post = $1 WHERE id = $2", [Date.now(), author_id]);
             const post = NewPost.rows[0]
             return res.status(200).json({message: "Пост успешно создан!", post: post});
         } catch (error) {
@@ -45,7 +46,7 @@ class PostController {
                 console.log(error)
                 return res.status(400).json({message: "Непредвиденная ошибка!"})
             }
-            return res.status(400).json({message: error})
+            
         }
     }
 
@@ -85,13 +86,13 @@ class PostController {
                 console.log(error)
                 return res.status(400).json({message: "Непредвиденная ошибка!"})
             }
-            return res.status(400).json({message: "Непредвиденная ошибка!"})
         }
     }
 
     async deletePost(req, res) {
         try {
-            const DeletePost = await bd.query("DELETE FROM post WHERE idPost = $1", [req.params.id])
+            const DeleteComm = await bd.query("DELETE FROM comment WHERE idpost = $1", [req.params.id])
+            const DeletePost = await bd.query("DELETE FROM post WHERE idpost = $1", [req.params.id])
             res.status(200).json(DeletePost)
         } catch (error) {
             console.log(error);
@@ -170,6 +171,17 @@ class PostController {
         try {
             const Post = await bd.query("SELECT post.*, person.*, COUNT(comment.*) AS commentcount FROM post JOIN person" +
                 " ON post.author_id = person.id LEFT JOIN comment ON comment.idpost = post.idpost WHERE city_post = $1 GROUP BY post.idpost, person.id;", [req.params.id]);
+            return res.status(200).json(Post.rows);
+        } catch (e) {
+            console.log(e);
+            return res.status(400).json({message: "Непредвиденная ошибка!"})
+        }
+    }
+
+    async findPostForUser(req, res){
+        try {
+            const Post = await bd.query("SELECT post.*, person.id, person.name, person.surname, person.city, person.is_activated, person.avatarurl, person.role, COUNT(comment.*) AS commentcount FROM post JOIN person" +
+                " ON post.author_id = person.id LEFT JOIN comment ON comment.idpost = post.idpost WHERE author_id = $1 GROUP BY post.idpost, person.id;", [req.params.id]);
             return res.status(200).json(Post.rows);
         } catch (e) {
             console.log(e);

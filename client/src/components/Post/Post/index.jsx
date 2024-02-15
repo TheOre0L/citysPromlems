@@ -1,23 +1,20 @@
-import React, {useContext, useEffect, useState} from 'react';
-import clsx from 'clsx';
-import IconButton from '@mui/material/IconButton';
+import CommentIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import CommentIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import EyeIcon from '@mui/icons-material/RemoveRedEyeOutlined';
-import ShareIcon from '@mui/icons-material/Share';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import styles from './Post.module.scss';
-import {UserInfo} from "../../UserInfo";
-import { PostSkeleton } from './Skeleton';
-import {Context} from "../../../index";
-import BasicModal from "../../ShareModal/ShareModal";
-import $api from "../../../http";
-import {observer} from "mobx-react-lite";
-import {hot} from "react-hot-loader/root";
-import {Link} from "react-router-dom";
+import EyeIcon from '@mui/icons-material/RemoveRedEyeOutlined';
+import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import clsx from 'clsx';
+import { useState } from 'react';
+import { hot } from "react-hot-loader/root";
+import { Link } from "react-router-dom";
+import $api from "../../../http";
+import BasicModal from "../../ShareModal/ShareModal";
+import { UserInfo } from "../../UserInfo";
+import styles from './Post.module.scss';
+import { PostSkeleton } from './Skeleton';
 const Post = ({
                        id,
                        title,
@@ -85,7 +82,7 @@ const Post = ({
             <ul className={styles.tags}>
                   <li key={city_post}>
                       {isPreview ? `#${city_post}`:
-                          <Link to={`/posts/city/${city_post}`}>#{city_post}</Link>
+                          <Link to={`/posts/${city_post}`}>#{city_post}</Link>
                       }
                   </li>
             </ul>

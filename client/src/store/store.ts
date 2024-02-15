@@ -1,13 +1,12 @@
-import {UserDTO} from "../models/response/UserDTO";
-import {makeAutoObservable, runInAction, toJS} from "mobx";
-import AuthService from "../services/AuthService";
 import axios from 'axios';
-import {AuthResponse} from "../models/response/AuthResponse";
-import {API_URL} from "../http";
-import UserServices from "../services/UserServices";
-import {PostDto} from "../models/response/PostDto";
+import { makeAutoObservable, runInAction, toJS } from "mobx";
+import { API_URL } from "../http";
+import { AuthResponse } from "../models/response/AuthResponse";
+import { PostDto } from "../models/response/PostDto";
+import { UserDTO } from "../models/response/UserDTO";
+import AuthService from "../services/AuthService";
 import PostService from "../services/PostService";
-import {number} from "joi";
+import UserServices from "../services/UserServices";
 
 export default class Store {
 
@@ -114,12 +113,12 @@ export default class Store {
             await localStorage.removeItem('userId');
             await this.setAuth(false);
             await this.setUser({} as UserDTO);
-            this.setMsg(true, "Успешный выход из аккаунта!", "warning")
         } catch (e: any) {
             console.error(e.response.data.message);
             this.setError(e.response.data.message, true);
         }  finally {
             this.setLoading(false);
+            window.location.replace("/")
         }
     }
 
@@ -157,7 +156,7 @@ export default class Store {
 
         } catch (e: any) {
             console.error(e.response.data.message);
-            this.setError(e.response.data.message, true);
+            this.setMsg(true, `${e.response.data.message}`, "error")
         }  finally {
             this.setLoading(false);
 

@@ -1,20 +1,19 @@
 import React from "react";
 
-import { SideBlock } from "./SideBlock";
+import DeleteIcon from "@mui/icons-material/Clear";
+import Avatar from "@mui/material/Avatar";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
-import Avatar from "@mui/material/Avatar";
 import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
-import List from "@mui/material/List";
 import Skeleton from "@mui/material/Skeleton";
-import {hot} from "react-hot-loader/root";
-import Markdown from "react-markdown";
-import IconButton from "@mui/material/IconButton";
-import DeleteIcon from "@mui/icons-material/Clear";
-import {useParams} from "react-router-dom";
-import $api, {API_URL} from "../http";
-import {observer} from "mobx-react-lite";
+import { observer } from "mobx-react-lite";
+import { hot } from "react-hot-loader/root";
+import { useParams } from "react-router-dom";
+import $api, { API_URL } from "../http";
+import { SideBlock } from "./SideBlock";
 
 const CommentsBlock = observer(({ items, store, children, isLoading = true }) => {
     const {id} = useParams();
@@ -41,10 +40,10 @@ const CommentsBlock = observer(({ items, store, children, isLoading = true }) =>
                   <Skeleton variant="text" height={25} width={120} />
                   <Skeleton variant="text" height={18} width={230} />
                 </div>
-              ) : (
+              ) : ( 
                   <>
                       <ListItemText>
-                          {obj.name} <span style={{fontSize: "10px"}}>{new Date(obj.createdat).toDateString()}</span> <br/>
+                          <a href={`/user/${obj.id}`}>{obj.name}</a> <span style={{fontSize: "10px"}}>{new Date(obj.createdat).toDateString()}</span> <br/>
                           {obj.text}
                       </ListItemText>
                       {obj.id == store.user.id || store.user.role == "ADMIN" ? (

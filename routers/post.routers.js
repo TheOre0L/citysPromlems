@@ -25,6 +25,10 @@ router.get('/city/:id',
   postController.findCity
 );
 
+router.get('/user/:id',
+  postController.findPostForUser
+);
+
 router.get('/:id',
     postController.getToUpbatePost
 );

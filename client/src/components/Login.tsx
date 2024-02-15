@@ -1,17 +1,15 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
-import {Link} from "react-router-dom";
-import {useContext, useState} from "react";
-import {Context} from "../index";
-import styles from "./Login.module.css";
-import Errors from "./Errors/errors";
-import TextField from "@mui/material/TextField";
-import Paper from "@mui/material/Paper";
 import Box from '@mui/material/Box';
-import {hot} from "react-hot-loader/root";
-import {observer} from "mobx-react-lite";
+import Button from '@mui/material/Button';
+import Modal from '@mui/material/Modal';
+import TextField from "@mui/material/TextField";
+import Typography from '@mui/material/Typography';
+import { observer } from "mobx-react-lite";
+import * as React from 'react';
+import { useContext, useState } from "react";
+import { hot } from "react-hot-loader/root";
+import { Context } from "../index";
+import Errors from "./Errors/errors";
+import styles from "./Login.module.css";
 
 const style = {
     position: 'absolute' as 'absolute',

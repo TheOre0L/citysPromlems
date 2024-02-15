@@ -22,7 +22,7 @@ class UserController {
                 email,
                 city} = req.body;
             const {error} = userValidation(req.body);
-            console.log(login.length >= 3 && login.length <= 255)
+            console.log(login.length >= 3 && login.length <= 255);
             if(login.length == 0) login = null;
             if(password.length == 0) password = null;
             if(name.length == 0) name = null;
@@ -31,7 +31,8 @@ class UserController {
             if(!validateEmail(email)) return res.status(400).json({message: "Указанное значение не является электронной почтой!"});
             const hashPassword = await bcrypt.hash(password, 3);
             const activationLink = uuid.v4();
-            const candidate = await bd.query("INSERT INTO person (login, password, name, surname, date_for_regist, email, active_link, city) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+            const candidate = await bd.query("INSERT INTO person (login, password, name, surname, date_for_regist, email, active_link, city) " +
+             "VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
                 [login, hashPassword, name, surname, new Date(), email, activationLink, city])
             await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`, login);
             const tokens = await tokenService.generateTokens({id: candidate.rows[0].id, email: candidate.rows[0].email, role: candidate.rows[0].role});
@@ -111,7 +112,7 @@ class UserController {
         try{
 
             const id = req.params.id;
-            const userDto = await bd.query("Select * From person where id = $1", [id])
+            const userDto = await bd.query("SELECT p.id, p.name, p.surname, p.city, p.is_activated, p.avatarurl, p.role, COUNT(DISTINCT post.idpost) AS total_posts, (SELECT COUNT(*) FROM comment WHERE comment.author_com_id = p.id) AS total_comments FROM person p LEFT JOIN post ON p.id = post.author_id WHERE p.id = $1 GROUP BY p.id, p.name, p.surname, p.city, p.is_activated, p.avatarurl, p.role;", [id])
             const user = userDto.rows[0];
             if(user){
                 return res.json({message:"Пользователь найден!", user})

@@ -1,24 +1,24 @@
-import React, {useContext, useEffect, useState, useRef} from 'react';
-import TextField from '@mui/material/TextField';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
-import {SimpleMdeReact} from 'react-simplemde-editor';
-import styles from './AddPost.module.scss';
-import {useParams} from "react-router-dom";
-import "easymde/dist/easymde.min.css";
-import {Context} from "../../index";
-import SendIcon from '@mui/icons-material/Send';
-import {observer} from "mobx-react-lite";
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
-import {hot} from "react-hot-loader/root";
-import {AuthHeader} from "../AuthHeader";
-import {Header} from "../Header";
-import Errors from "../Errors/errors";
 import SaveIcon from '@mui/icons-material/Save';
-import {$api, API_URL} from "../../http/index";
-import {CLIENT_URL} from "../../App";
+import SendIcon from '@mui/icons-material/Send';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import "easymde/dist/easymde.min.css";
+import { observer } from "mobx-react-lite";
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { hot } from "react-hot-loader/root";
+import { useParams } from "react-router-dom";
+import { SimpleMdeReact } from 'react-simplemde-editor';
+import { CLIENT_URL } from "../../App";
+import { $api, API_URL } from "../../http/index";
+import { Context } from "../../index";
+import { AuthHeader } from "../AuthHeader";
+import Errors from "../Errors/errors";
+import { Header } from "../Header";
 import CustomizedSnackbars from "../Message/notification_msg";
-import PreviewPost from "../previewPost/previewPost"
+import PreviewPost from "../previewPost/previewPost";
+import styles from './AddPost.module.scss';
 const AddPost = observer(() => {
     const {id} = useParams();
     const {store} = useContext(Context);
@@ -30,7 +30,10 @@ const AddPost = observer(() => {
     const handleChangeFile = async (event) => {
         try{
             const formData = new FormData();
-            formData.append("image", event.target.files[0])
+            const file = event.target.files[0];
+            const uniquePrefix = new Date().toISOString().replace(/[-:.]/g,'');
+            const uniqueFile = new File([file], `${uniquePrefix}-${file.name}`, { type: file.type });
+            formData.append("image", uniqueFile);
             const {data} = await $api.post("/upload", formData);
             setimageUrl(data.url)
         }catch (e) {
@@ -49,8 +52,8 @@ const AddPost = observer(() => {
             city,
             imageUrl,
         }).then(res => {
-            store.setMsg(true, `Пост успешно обновлен, через 4 секунды вы будете перенаправленны на него!`, "success")
-            setTimeout(() => {window.location.replace(`${CLIENT_URL}/post/${id}`)}, 4000)
+            store.setMsg(true, `Пост успешно обновлен, через 3 секунды вы будете перенаправленны на него!`, "success")
+            setTimeout(() => {window.location.replace(`${CLIENT_URL}/post/${id}`)}, 3000)
         }).catch((error) => {
             console.log(error)
             alert("При сохранении произошла ошибка")

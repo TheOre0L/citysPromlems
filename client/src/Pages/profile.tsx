@@ -1,113 +1,130 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {Context} from "../index";
-import {observer} from "mobx-react-lite";
-import Avatar from '@mui/material/Avatar';
-import Stack from '@mui/material/Stack';
-import {makeAutoObservable, toJS} from "mobx";
-import $api, {API_URL} from "../http";
-import {Link, useParams} from "react-router-dom";
-const Profile = () => {
+import { toJS } from "mobx";
+import { observer } from "mobx-react-lite";
+import { FC, useContext, useEffect, useState } from 'react';
+import { Link, useParams } from "react-router-dom";
+import { CLIENT_URL } from "../App";
+import AuthHeader from "../components/AuthHeader";
+import Header from "../components/Header";
+import CustomizedSnackbars from "../components/Message/notification_msg";
+import Post from "../components/Post/Post";
+import { PostSkeleton } from "../components/Post/Post/Skeleton";
+import Footer from "../components/footer";
+import $api, { API_URL } from "../http";
+import { Context } from "../index";
+const Profile: FC = () => {
     const {store} = useContext(Context);
     const [datas, setData] = useState<any>();
+    const [posts, SetPosts]= useState([])
     const [isLoading, setLoading] = useState(true);
     const {id} = useParams();
     useEffect(() => {
-
+        if (localStorage.getItem('token')) {
+            store.checkAuth()
+        }
         $api.get(`api/user/${id}`).then((res) => {
             setData(res.data)
             document.title = `Профиль ${res.data.user.name} ${res.data.user.surname} | CITY Problems`
-            setLoading(false)
+            $api.get(`post/user/${id}`).then((res) => {
+                SetPosts(res.data)
+                setLoading(false)
+            })
         })
     }, [])
 
-    function stringToColor(string: string) {
-        let hash = 0;
-        let i;
-
-        /* eslint-disable no-bitwise */
-        for (i = 0; i < string.length; i += 1) {
-            hash = string.charCodeAt(i) + ((hash << 5) - hash);
-        }
-
-        let color = '#';
-
-        for (i = 0; i < 3; i += 1) {
-            const value = (hash >> (i * 8)) & 0xff;
-            color += `00${value.toString(16)}`.slice(-2);
-        }
-        /* eslint-enable no-bitwise */
-
-        return color;
-    }
-    function stringAvatar(name: string) {
-        return {
-            sx: {
-                bgcolor: stringToColor(name),
-            },
-            children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
-        };
-    }
 
     if(isLoading){
-        return <div>Идет загрузка!</div>
+        return <PostSkeleton/>
     }
     return (
         <div>
-
-            <div className="h-screen bg-gray-200  dark:bg-gray-800   flex flex-wrap items-center  justify-center  ">
-                <div
-                    className="container lg:w-2/6 xl:w-2/7 sm:w-full md:w-2/3    bg-white  shadow-lg    transform   duration-200 easy-in-out">
-                    <div className=" h-16 overflow-hidden">
-                    </div>
-                    <div className="flex justify-center px-5  -mt-12">
-                        {!datas.user.avatarurl ? (
-                            <Avatar className="p-2" style={{height: "100px", width: "100px"}} {...stringAvatar(`${datas.user.name} ${datas.user.surname}`)} />
-                        ):(
-                            <Avatar style={{height: "100px", width: "100px"}} src={`${API_URL}${datas.user.avatarurl}`} />
-                        )}
-
-                    </div>
-                    <div className=" ">
-                        <div className="text-center px-14">
-                            <h2 className="text-gray-800 text-3xl font-bold">{`${datas.user.name} ${datas.user.surname}`}</h2>
-                            {datas.user.role == "ADMIN" ?
-                            <>
-                                {store.user.id == datas.user.id ?
-                                    <Link to={"/admin"} className="text-yellow-600 mt-2">{`@Администратор`}</Link>
-                                    :
-                                    <p className="text-yellow-600 mt-2">{`@Администратор`}</p>
-                                }
-
-                            </>
-                                :
-                            <>
-                                <p className="text-gray-400 mt-2">{`@Пользователь`}</p>
-                            </>
-                            }
-
-                            <p className="text-gray-400 mt-2">{`${datas.user.city}`}</p>
-                            {
-                                datas.user.is_activated ? (<p className="text-gray-400 mt-2">{`Аккаунт активирован`}</p>) : (<p className="text-gray-400 mt-2">{`Аккаунт не активирован`}</p>)
-                            }
-                            <p className="mt-2 text-gray-600">Lorem Ipsum is simply dummy text of the printing and
-                                typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since
-                                the 1500s, </p>
-                        </div>
-                        <hr className="mt-6"/>
-                        <div className="flex  bg-gray-50 ">
-                            <div className="text-center w-1/2 p-4 hover:bg-gray-100 cursor-pointer">
-                                <p><span className="font-semibold"></span> Followers</p>
-                            </div>
-                            <div className="border"></div>
-                            <div className="text-center w-1/2 p-4 hover:bg-gray-100 cursor-pointer">
-                                <p><span className="font-semibold">2.0 k </span> Following</p>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
+            {store.is_message ? <CustomizedSnackbars text={store.message} is_msg = {store.is_message} color={store.color_msg}/>: null}
+            <div className="pb-12">
+            {store.isAuth ? (
+                <>
+                    <AuthHeader/>
+                </>
+            ) : (
+                <Header/>
+            )
+            }
             </div>
 
+        
+            <div className="w-full lg:w-8/12 px-4 mx-auto">
+            <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-xl rounded-lg mt-16">
+                <div className="px-6">
+                <div className="flex flex-wrap justify-center">
+
+                    <img alt="..." src={`${API_URL}${datas.user.avatarurl}`} style={{objectFit: "cover"}} width={130} className="shadow-xl  max-w-150-px rounded-full align-middle h-auto border-none -m-16 -ml-20 lg:-ml-16" />
+                </div>
+                <div className="text-center mt-20">
+                    <h3 className="text-xl font-semibold leading-normal mb-2 text-blueGray-700">
+                    {datas.user.name} {datas.user.surname}
+                    </h3>
+                    {datas.user.role == "ADMIN" && store.user.id == datas.user.id ? <Link className="text-orange-400 text-sm" to={"/admin"}>@Администратор</Link> : datas.user.role == "ADMIN" ? <span className="text-orange-400 text-sm" >@Администратор</span> : "@Пользователь"}
+                    <div className="text-sm leading-normal mt-3 mb-2 text-blueGray-400 font-bold uppercase">
+                    <i className="fas fa-map-marker-alt text-lg text-blueGray-400"></i>
+                    {datas.user.city}
+                    </div>
+                    <div className="mb-1 text-blueGray-600 mt-4">
+                    <i className="fas fa-briefcase  text-lg text-blueGray-400"></i>
+                    {store.user.id == datas.user.id ? 
+                    <>
+                        {datas.user.is_activated ? <span className="text-green-700">Аккаунт активирован</span> : <span className="text-red-700">Аккаунт не активирован</span>}
+                    </> : null
+                    }
+                    </div>
+                    <div className="w-full px-4 text-center mt-2">
+                    <div className="flex justify-center py-4 lg:pt-4 pt-8">
+                        <div className="mr-4 p-3 text-center">
+                        <span className="text-sm text-blueGray-400">Всего постов: </span>
+                        <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
+                            {datas.user.total_posts}
+                        </span>
+                        
+                        </div>
+                        <div className="lg:mr-4 p-3 text-center">
+                        <span className="text-sm text-blueGray-400">Комментарии: </span>
+                        <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
+                        {datas.user.total_comments}
+                        {console.log(posts)}
+                        </span>
+                        </div>
+                    </div>
+                    </div>
+                    <span className="text-xl text-blueGray-400">Все посты пользователя </span>
+                </div>
+                <div className="mt-10 py-10 border-t border-blueGray-200">
+                    <div className="flex flex-wrap justify-center">
+                    <div className="w-full lg:w-12/12 px-4">
+                    {toJS(posts).map((item:any) => (
+                // @ts-ignore
+                            <Post
+                                key={item.idpost}
+                                id={item.idpost}
+                                title={item.title}
+                                imageUrl={`${API_URL}${item.image}`}
+                                LikeCount={item.likes.length}
+                                city_post={item.city_post}
+                                createdAt={item.createdat}
+                                user={{
+                                    avatarUrl: `${API_URL}${item.avatarurl}`,
+                                    fullName: `${item.name} ${item.surname}`,
+                                    href: `${CLIENT_URL}/user/${item.id}`
+                                }}
+                                viewCount={item.viewcount}
+                                commentsCount={item.commentcount}
+                                isEditable = {item.author_id == store.user.id || store.user.role == "ADMIN" ? true : false}
+                                store = {store}
+                            />
+                        ))}
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+            <Footer/>
         </div>
     );
 };

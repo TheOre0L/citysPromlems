@@ -1,16 +1,16 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
-import {Context} from "../index";
-import {AuthHeader} from "../components/AuthHeader";
-import {Header} from "../components/Header";
-import {hot} from "react-hot-loader/root";
-import {observer} from "mobx-react-lite";
-import Paper from '@mui/material/Paper';
-import styles from '../components/AddPosts/AddPost.module.scss';
-import stylesL from "../components/Login.module.css";
-import $api, {API_URL} from "../http";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 import SaveIcon from "@mui/icons-material/Save";
+import Button from "@mui/material/Button";
+import Paper from '@mui/material/Paper';
+import TextField from "@mui/material/TextField";
+import { observer } from "mobx-react-lite";
+import { useContext, useEffect, useRef, useState } from 'react';
+import { hot } from "react-hot-loader/root";
+import styles from '../components/AddPosts/AddPost.module.scss';
+import { AuthHeader } from "../components/AuthHeader";
+import { Header } from "../components/Header";
+import stylesL from "../components/Login.module.css";
+import $api, { API_URL } from "../http";
+import { Context } from "../index";
 
 const Settings = observer(() => {
     const {store} = useContext(Context);
@@ -21,7 +21,10 @@ const Settings = observer(() => {
     const handleChangeFile = async (event:any) => {
         try{
             const formData = new FormData();
-            formData.append("image", event.target.files[0])
+            const file = event.target.files[0];
+            const uniquePrefix = new Date().toISOString().replace(/[-:.]/g,'');
+            const uniqueFile = new File([file], `${uniquePrefix}-${file.name}`, { type: file.type });
+            formData.append("image", uniqueFile);
             const {data} = await $api.post("/upload", formData);
             setImageUrl(data.url)
         }catch (e) {

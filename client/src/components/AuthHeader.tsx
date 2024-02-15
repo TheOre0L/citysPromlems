@@ -1,13 +1,12 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {Context} from "../index";
-import {UserDTO} from "../models/response/UserDTO";
-import { Fragment } from 'react'
-import { Menu, Transition } from '@headlessui/react'
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
-import {observer} from "mobx-react-lite";
+import { Menu, Transition } from '@headlessui/react';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import { observer } from "mobx-react-lite";
+import { Fragment, useContext, useState } from 'react';
+import { Link } from "react-router-dom";
+import { CLIENT_URL } from "../App";
+import { Context } from "../index";
+import { UserDTO } from "../models/response/UserDTO";
 import styles from "./Header/Header.module.scss";
-import {CLIENT_URL} from "../App";
-import {Link} from "react-router-dom";
 function classNames(...classes: any[]) {
     return classes.filter(Boolean).join(' ')
 }
@@ -52,10 +51,23 @@ export const AuthHeader = () => {
                             >
                                 <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                     <div className="py-1">
-                                        <Menu.Item>
+                                    <Menu.Item>
                                             {({ active }) => (
                                                 <Link
-                                                    to={`${CLIENT_URL}/user/${store.user.id}`}
+                                                    to={`/post/create`}
+                                                    className={classNames(
+                                                        active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                                        'block px-4 py-2 text-sm'
+                                                    )}
+                                                >
+                                                    Создать пост
+                                                </Link>
+                                            )}
+                                        </Menu.Item>
+                                        <Menu.Item>
+                                            {({ active }) => (
+                                                <a
+                                                    href={`${CLIENT_URL}/user/${store.user.id}`}
                                                     onClick={() => store.getUser(parseInt(window.location.href.split("/")[4]))}
                                                     className={classNames(
                                                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
@@ -63,7 +75,7 @@ export const AuthHeader = () => {
                                                     )}
                                                 >
                                                     Профиль
-                                                </Link>
+                                                </a>
                                             )}
                                         </Menu.Item>
                                         <Menu.Item>
