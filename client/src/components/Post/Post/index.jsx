@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { hot } from "react-hot-loader/root";
 import { Link } from "react-router-dom";
 import $api from "../../../http";
+import ComplaintsModal from "../../ComplaintsModal/ComplaintsModal";
 import BasicModal from "../../ShareModal/ShareModal";
 import { UserInfo } from "../../UserInfo";
 import styles from './Post.module.scss';
@@ -110,6 +111,7 @@ const Post = ({
                 <CommentIcon />
                 <span>{commentsCount}</span>
                   {isFullPost && !isPreview  ? <BasicModal/> : null}
+                  {isFullPost && !isPreview  ? <ComplaintsModal/> : null}
               </li>
             </ul>
           </div>

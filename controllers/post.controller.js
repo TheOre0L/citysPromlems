@@ -92,7 +92,9 @@ class PostController {
     async deletePost(req, res) {
         try {
             const DeleteComm = await bd.query("DELETE FROM comment WHERE idpost = $1", [req.params.id])
+            const DeleteComplaints = await bd.query("DELETE FROM complaints WHERE idpost = $1", [req.params.id])
             const DeletePost = await bd.query("DELETE FROM post WHERE idpost = $1", [req.params.id])
+            
             res.status(200).json(DeletePost)
         } catch (error) {
             console.log(error);
@@ -134,7 +136,6 @@ class PostController {
     async getPosts(req, res) {
         try {
             const Post = await bd.query("SELECT post.*, person.*, COUNT(comment.*) AS commentcount FROM post JOIN person ON post.author_id = person.id LEFT JOIN comment ON comment.idpost = post.idpost GROUP BY post.idpost, person.id;");
-
             return res.status(200).json(Post.rows);
         } catch (error) {
             console.log(error);

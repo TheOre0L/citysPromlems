@@ -5,9 +5,11 @@ const app = express();
 const cors = require('cors');
 const multer = require("multer")
 const cookieParser = require('cookie-parser')
-const userRouter = require("./routers/user.routers")
-const postRouter = require("./routers/post.routers")
+const userRouter = require("./routers/user.router")
+const adminRouter = require("./routers/admin.router")
+const postRouter = require("./routers/post.router")
 const commentRouter = require("./routers/comment.router")
+const complaintsRouter = require("./routers/complaint.router")
 const authMiddleware = require("./middlewares/auth.middelewares");
 const isActive = require('./middlewares/isActive.middlewares')
 
@@ -19,7 +21,9 @@ app.use(cors({
 app.use('/uploads', express.static('uploads'));
 
 app.use("/api", userRouter)
+app.use("/admin", adminRouter)
 app.use("/post", postRouter)
+app.use("/complaints", complaintsRouter)
 app.use("/comment", commentRouter)
 
 const storage = multer.diskStorage({

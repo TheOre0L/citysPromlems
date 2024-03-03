@@ -112,7 +112,7 @@ class UserController {
         try{
 
             const id = req.params.id;
-            const userDto = await bd.query("SELECT p.id, p.name, p.surname, p.city, p.is_activated, p.avatarurl, p.role, COUNT(DISTINCT post.idpost) AS total_posts, (SELECT COUNT(*) FROM comment WHERE comment.author_com_id = p.id) AS total_comments FROM person p LEFT JOIN post ON p.id = post.author_id WHERE p.id = $1 GROUP BY p.id, p.name, p.surname, p.city, p.is_activated, p.avatarurl, p.role;", [id])
+            const userDto = await bd.query("SELECT p.id, p.name, p.surname, p.city, p.is_activated, p.avatarurl, p.role, p.ban, COUNT(DISTINCT post.idpost) AS total_posts, (SELECT COUNT(*) FROM comment WHERE comment.author_com_id = p.id) AS total_comments FROM person p LEFT JOIN post ON p.id = post.author_id WHERE p.id = $1 GROUP BY p.id, p.name, p.surname, p.city, p.is_activated, p.avatarurl, p.role;", [id])
             const user = userDto.rows[0];
             if(user){
                 return res.json({message:"Пользователь найден!", user})
@@ -185,29 +185,7 @@ class UserController {
             return res.json(e)
         }
     }
-    async adminAdd(req, res) {
-        try{
-            const {uid} = req.body;
-            console.log(req.body)
-            const updateUser = await bd.query("UPDATE person set role = 'ADMIN' where id = $1 RETURNING *", [uid]);
-            const user = updateUser.rows[0];
-            res.status(200).json({message:`Пользователь #${uid} успешно назначен администратором!`, user: user})
-        } catch (e) {
-            console.log(e)
-            return res.json(e)
-        }
-    }
-    async adminDelete(req, res) {
-        try{
-            const {uid} = req.body;
-            const updateUser = await bd.query("UPDATE person set role = 'USER' where id = $1 RETURNING *", [uid]);
-            const user = updateUser.rows[0];
-            res.status(200).json({message:`Пользователь #${uid} успешно разжалован!`, user: user})
-        } catch (e) {
-            console.log(e)
-            return res.json(e)
-        }
-    }
+
 }
 
 module.exports = new UserController();
