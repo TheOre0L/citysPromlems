@@ -35,7 +35,7 @@ export const Index = () => {
                 src={`${API_URL}${store.user.avatarurl}`}/>
         <div className={styles.form}>
           <TextField
-            label="Написать комментарий"
+            placeholder="Написать комментарий"
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             variant="outlined"

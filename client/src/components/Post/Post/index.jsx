@@ -53,7 +53,6 @@ const Post = ({
         {isEditable && (
             <div className={styles.editButtons}>
               <Link to={`/post/${id}/edit`}>
-                  {console.log(id)}
                   <Tooltip title="Изменить пост">
                     <IconButton color="primary">
                       <EditIcon />
