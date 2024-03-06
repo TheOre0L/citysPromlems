@@ -168,6 +168,31 @@ class PostController {
             return res.status(400).json({message: "Непредвиденная ошибка!"})
         }
     }
+    async searchPosts(req, res) {
+        try {
+            const { search } = req.body;  // Получаем 'search' из тела запроса.
+            
+            // Исправленный запрос с учётом правильного использования COUNT() и параметризованного значения.
+            const queryText = `
+                SELECT post.*, person.*, COUNT(comment.*) AS commentcount
+                FROM post 
+                JOIN person ON post.author_id = person.id 
+                LEFT JOIN comment ON comment.idpost = post.idpost
+                WHERE post.title LIKE CONCAT('%', $1::text, '%')
+                GROUP BY post.idpost, person.id;
+            `;
+            
+            // Вызов запроса к базе данных с параметром 'search'.
+            const Post = await bd.query(queryText, [search]); // Прямое использование 'search' в массиве параметров.
+            
+            return res.status(200).json(Post.rows);
+        } catch (error) {
+            console.log(error);
+            return res.status(400).json({ message: "Непредвиденная ошибка!" });
+        }
+    }
+    
+    
     async findCity(req, res){
         try {
             const Post = await bd.query("SELECT post.*, person.*, COUNT(comment.*) AS commentcount FROM post JOIN person" +

@@ -21,6 +21,13 @@ router.get('/allposts',
     postController.getPosts
 );
 
+router.post('/search',
+    urlencodedParser,
+    jsonParser,
+    postController.searchPosts
+);
+
+
 router.get('/city/:id',
   postController.findCity
 );
