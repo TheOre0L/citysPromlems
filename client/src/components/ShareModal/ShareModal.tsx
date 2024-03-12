@@ -1,62 +1,70 @@
+import Button from '@mui/joy/Button';
+import DialogTitle from '@mui/joy/DialogTitle';
+import List from '@mui/joy/List';
+import Modal from '@mui/joy/Modal';
+import ModalClose from '@mui/joy/ModalClose';
+import ModalDialog from '@mui/joy/ModalDialog';
+import Stack from '@mui/joy/Stack';
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
+
 import ShareIcon from "@mui/icons-material/Share";
 import Form from 'react-bootstrap/Form';
 import {
-    EmailShareButton,
-    MailruShareButton,
-    OKShareButton,
-    RedditShareButton,
-    TelegramShareButton,
-    VKShareButton,
-    WhatsappShareButton,
     EmailIcon,
+    EmailShareButton,
     MailruIcon,
+    MailruShareButton,
     OKIcon,
+    OKShareButton,
     RedditIcon,
+    RedditShareButton,
     TelegramIcon,
+    TelegramShareButton,
     VKIcon,
+    VKShareButton,
     WhatsappIcon,
+    WhatsappShareButton,
 } from "react-share";
-
-const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-};
 
 export default function BasicModal() {
     const shareUrl = window.location.href
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const [layout, setLayout] = React.useState<any>(undefined);
 
     return (
         <div>
-            <button type="button" onClick={handleOpen} className={"ml-3"}>
+     <React.Fragment>
+        <Stack className='ml-1' direction="row" spacing={1}>
+          <Button
+            variant="plain"
+            className='ml-5'
+            color="neutral"
+            onClick={() => {
+              setLayout('center')
+            }}
+          >
                 <ShareIcon/>
                 Поделиться
-            </button>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
+          </Button>
+        </Stack>
+        <Modal
+          open={!!layout}
+          onClose={() => {
+            setLayout(undefined);
+          }}
+        >
+          <ModalDialog layout={layout}>
+            <ModalClose />
+            <DialogTitle>
+            <ShareIcon/>
+                Поделиться
+                </DialogTitle>
+            <List
+              sx={{
+                mx: 'calc(-1 * var(--ModalDialog-padding))',
+                px: 'var(--ModalDialog-padding)',
+              }}
             >
-                <Box sx={style}>
-                    <Typography id="modal-modal-title" className={""} variant="h6" component="h2">
-                        Поделиться записью
-                    </Typography>
-                    <Form.Control className={"mt-2"} type="text" readOnly value={shareUrl} placeholder="Normal text" />
+              <Form.Control className={"mt-2"} type="text" readOnly value={shareUrl} placeholder="Normal text" />
                     <p className={"mt-1"} style={{fontSize: "12px"}} >Скопируйте ссылку или выберите соц-сеть</p>
                     <div className={"mt-3 mb-0"}>
                         <TelegramShareButton url={shareUrl}>
@@ -81,8 +89,10 @@ export default function BasicModal() {
                             <WhatsappIcon size={36} round={true}/>
                         </WhatsappShareButton>
                     </div>
-                </Box>
-            </Modal>
+            </List>
+          </ModalDialog>
+        </Modal>
+      </React.Fragment>
         </div>
     );
 }

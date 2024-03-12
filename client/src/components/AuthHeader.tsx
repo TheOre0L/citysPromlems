@@ -1,5 +1,11 @@
 import { Menu, Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import AddIcon from '@mui/icons-material/Add';
+import ApartmentIcon from '@mui/icons-material/Apartment';
+import LogoutIcon from '@mui/icons-material/Logout';
+import SettingsIcon from '@mui/icons-material/Settings';
+import NotInterestedIcon from '@mui/icons-material/NotInterested';
 import { observer } from "mobx-react-lite";
 import { Fragment, useContext, useState } from 'react';
 import { Link } from "react-router-dom";
@@ -23,6 +29,7 @@ export const AuthHeader = () => {
                                  <Link className={styles.logo} to="/">
                                     <div>
                                       <span className={"text-3xl caret-amber-600"} style={{color: "#d97706", textDecoration: "none"}}>
+                                        <ApartmentIcon/>
                                         CITY
                                       </span>
                                         <span className={ "text-dark"}>
@@ -53,6 +60,7 @@ export const AuthHeader = () => {
                                     <div className="py-1">
                                     <Menu.Item>
                                             {({ active }) => (
+                                                store.user.is_activated && !store.user.ban ? <>
                                                 <Link
                                                     to={`/post/create`}
                                                     className={classNames(
@@ -60,8 +68,20 @@ export const AuthHeader = () => {
                                                         'block px-4 py-2 text-sm'
                                                     )}
                                                 >
-                                                    Создать пост
+                                                   <AddIcon className='mr-4'/>Создать пост
                                                 </Link>
+                                                </> : <div >
+                                                <Link
+                                                    to={`/`}
+                                                    className={classNames(
+                                                        active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                                        'block px-4 py-2 text-sm pointer-events-none line-through '
+                                                    )}
+                                                >
+                                                   <NotInterestedIcon className='mr-4'/>Создать пост
+                                                </Link>
+                                                </div>
+
                                             )}
                                         </Menu.Item>
                                         <Menu.Item>
@@ -74,7 +94,7 @@ export const AuthHeader = () => {
                                                         'block px-4 py-2 text-sm'
                                                     )}
                                                 >
-                                                    Профиль
+                                                   <AccountCircleIcon className='mr-4'/>Профиль
                                                 </a>
                                             )}
                                         </Menu.Item>
@@ -87,7 +107,7 @@ export const AuthHeader = () => {
                                                         'block px-4 py-2 text-sm'
                                                     )}
                                                 >
-                                                    Настройки
+                                                    <SettingsIcon className='mr-4'/>Настройки
                                                 </Link>
                                             )}
                                         </Menu.Item>
@@ -103,7 +123,7 @@ export const AuthHeader = () => {
                                                             'block w-full px-4 py-2 text-left text-sm'
                                                         )}
                                                     >
-                                                        Выйти
+                                                        <LogoutIcon className='mr-4'/>Выйти
                                                     </button>
                                                 )}
                                             </Menu.Item>

@@ -1,19 +1,18 @@
-import React, {useContext, useEffect, useState} from "react";
-import Markdown from 'react-markdown'
-import Post from "../components/Post/Post";
+import { observer } from "mobx-react-lite";
+import { useContext, useEffect, useState } from "react";
+import { hot } from "react-hot-loader/root";
+import Markdown from 'react-markdown';
+import { useParams } from "react-router-dom";
+import { CLIENT_URL } from "../App";
 import { Index } from "../components/AddComment";
+import { AuthHeader } from "../components/AuthHeader";
 import CommentsBlock from "../components/CommentsBlock";
-import {AuthHeader} from "../components/AuthHeader";
-import {Header} from "../components/Header";
-import {Context} from "../index";
-import {observer} from "mobx-react-lite";
-import {$api, API_URL} from "../http";
-import {CLIENT_URL} from "../App";
-import {toJS} from "mobx";
-import {useParams} from "react-router-dom";
-import {hot} from "react-hot-loader/root";
-import Footer from "../components/footer";
+import { Header } from "../components/Header";
 import CustomizedSnackbars from "../components/Message/notification_msg";
+import Post from "../components/Post/Post";
+import Footer from "../components/footer";
+import { $api, API_URL } from "../http";
+import { Context } from "../index";
 
 
 const FullPost = observer(() => {
@@ -61,7 +60,7 @@ const FullPost = observer(() => {
   return (
     <>
         {store.isAuth ? <AuthHeader/> : <Header/>}
-
+        {store.is_message ? <CustomizedSnackbars text={store.message} is_msg = {store.is_message} color={store.color_msg}/>: null}
       <Post
         id={data.post.idpost}
         title={data.post.title}
@@ -81,18 +80,25 @@ const FullPost = observer(() => {
       >
         <Markdown children={data.post.context}/>
       </Post>
-
+        { data.post.comments == true ? 
+        <>
                 <CommentsBlock
                     items={[...comment]}
                     store={store}
                     isLoading={isLoadingComm}
-                >
-                    {store.isAuth ?  <>
+                >{store.isAuth ?  <>
                     <Index />
                         </> :
                         null
                     }
                 </CommentsBlock>
+        </> : <>
+            <p className="text-center font-mont text-2xl">Комментарии на данном посте были отключены автором!</p>
+        </>
+
+        }
+
+
         <Footer/>
     </>
   );

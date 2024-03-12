@@ -1,5 +1,7 @@
+import EditIcon from '@mui/icons-material/Edit';
 import Button from '@mui/joy/Button';
 import ButtonGroup from '@mui/joy/ButtonGroup';
+import Tooltip from '@mui/material/Tooltip';
 import { toJS } from 'mobx';
 import { observer } from "mobx-react-lite";
 import { useContext, useEffect, useState } from 'react';
@@ -10,6 +12,7 @@ import CustomizedSnackbars from "../../components/Message/notification_msg";
 import $api, { API_URL } from "../../http";
 import { Context } from "../../index";
 import ComplaintsModal from '../AdminComponet/Complaints/Complaints';
+import DeletePost from "../DeletePost/DeletePostModal";
 import { PostSkeleton } from '../Post/Post/Skeleton';
 const AdminPanelPost = observer(() => {
     const {store} = useContext(Context);
@@ -57,37 +60,20 @@ const AdminPanelPost = observer(() => {
                             </td>
                             <td><Link to={`/post/${item.idpost}`}>Перейти на профиль</Link></td>
                             <td>
-                            <ButtonGroup
-                                className = "ml-5"
-                                color="primary"
-                                variant="soft"
+                            <ButtonGroup>
+                            <DeletePost postId = {item.idpost}></DeletePost>
+                            <Link to={`/post/${item.idpost}/edit`}>
+                                <Tooltip title="Изменить пост">
+                                <Button
+                                    variant="plain"
+                                    color="primary"
                                 >
-                            <Button
-                                color="danger"
-                                loading={false}
-                                onClick={function(){}}
-                                size="lg"
-                                variant="soft"
-                            >Удалить</Button>
-                            <br></br>
-                            <Button
-                                color="danger"
-                                loading={false}
-                                onClick={function(){}}
-                                size="lg"
-                                variant="soft"
-                                
-                            >Забанить автора</Button>
-                            <br></br>
-                            <Button
-                                color="primary"
-                                loading={false}
-                                onClick={function(){}}
-                                size="lg"
-                                variant="soft"
-                                
-                            >Изменить</Button>
-                                                        
+                                    
+                                            <EditIcon className='mr-2'/>
+                                            Изменить
+                                </Button>
+                                </Tooltip>
+                            </Link>
                                 </ButtonGroup>
                             
                             </td>

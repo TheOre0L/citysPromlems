@@ -1,10 +1,9 @@
 import CommentIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
-import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import EyeIcon from '@mui/icons-material/RemoveRedEyeOutlined';
-import IconButton from '@mui/material/IconButton';
+import Button from '@mui/joy/Button';
 import Tooltip from '@mui/material/Tooltip';
 import clsx from 'clsx';
 import { useState } from 'react';
@@ -12,6 +11,7 @@ import { hot } from "react-hot-loader/root";
 import { Link } from "react-router-dom";
 import $api from "../../../http";
 import ComplaintsModal from "../../ComplaintsModal/ComplaintsModal";
+import DeletePost from "../../DeletePost/DeletePostModal";
 import BasicModal from "../../ShareModal/ShareModal";
 import { UserInfo } from "../../UserInfo";
 import styles from './Post.module.scss';
@@ -53,16 +53,16 @@ const Post = ({
         {isEditable && (
             <div className={styles.editButtons}>
               <Link to={`/post/${id}/edit`}>
-                  <Tooltip title="Изменить пост">
-                    <IconButton color="primary">
-                      <EditIcon />
-                    </IconButton>
-                  </Tooltip>
+                    <Button
+                    variant="plain"
+                    color="primary"
+                    >          
+                   <EditIcon className='mr-2'/>
+                      Изменить
+                  </Button>
               </Link>
                   <Tooltip title="Удалить пост">
-                      <IconButton  onClick={() => {store.deletePost(id)}} color="secondary">
-                          <DeleteIcon />
-                      </IconButton>
+                  <DeletePost postId = {id}/>
                   </Tooltip>
             </div>
         )}

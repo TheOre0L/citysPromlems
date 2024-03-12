@@ -138,7 +138,7 @@ export default class Store {
             this.setLoading(false);
         }
     }
-    async createPost(title: string, context:string, author_id:number, city_post:string, image_url:string,){
+    async createPost(title: string, context:string, author_id:number, city_post:string, image_url:string, comments: boolean){
         this.setLoading(true);
         try {
             const response = await PostService.create(
@@ -146,7 +146,8 @@ export default class Store {
                 context,
                 author_id,
                 city_post,
-                image_url
+                image_url,
+                comments
             );
             this.setNewPost(response.data.post);
             this.setMsg(true, `Пост успешно создан, через 4 секунды вы будете перенаправленны на него!`, "success")

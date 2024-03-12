@@ -1,5 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import Button from '@mui/material/Button';
+import ApartmentIcon from '@mui/icons-material/Apartment';
 import styles from './Header.module.scss';
 import Container from '@mui/material/Container';
 import {Context} from "../../index";
@@ -21,6 +22,7 @@ export const Header = () => {
                                  <Link className={styles.logo} to="/">
                                     <div>
                                       <span className={"text-3xl caret-amber-600"} style={{color: "#d97706", textDecoration: "none"}}>
+                                      <ApartmentIcon/>
                                         CITY
                                       </span>
                                         <span className={ "text-dark"}>

@@ -13,7 +13,8 @@ router.post('/registration',
     userController.registration);
 router.post('/login', urlencodedParser ,jsonParser, userController.login)
 router.get('/users', authMiddleware,userController.getUsers)
-router.get('/activate/:activation_link', userController.activation)
+router.post('/activate', urlencodedParser, jsonParser, authMiddleware, userController.activation)
+router.post('/activate/get', urlencodedParser, jsonParser, authMiddleware, userController.getActivationLink)
 router.get('/user/:id', userController.getOneUser)
 router.get('/refresh', userController.refresh)
 router.get('/logout', userController.logout)

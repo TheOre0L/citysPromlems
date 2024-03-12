@@ -12,8 +12,6 @@ import {PostSkeleton} from "../components/Post/Post/Skeleton";
 import CustomizedSnackbars from "../components/Message/notification_msg";
 export const Home = () => {
     const {store} = useContext(Context);
-    const [users, setUsers] = useState<UserDTO[]>([]);
-
     useEffect(() => {
         document.title = 'Главная страница | CITY Problems';
         if (localStorage.getItem('token')) {
@@ -23,7 +21,6 @@ export const Home = () => {
 
     }, [])
     const [show, setShow] = useState(false);
-
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 

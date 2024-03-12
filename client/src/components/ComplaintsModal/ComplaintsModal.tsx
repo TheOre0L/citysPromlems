@@ -1,48 +1,32 @@
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import Button from '@mui/joy/Button';
+import DialogTitle from '@mui/joy/DialogTitle';
+import List from '@mui/joy/List';
+import Modal from '@mui/joy/Modal';
+import ModalClose from '@mui/joy/ModalClose';
+import ModalDialog from '@mui/joy/ModalDialog';
+import Stack from '@mui/joy/Stack';
 import Textarea from '@mui/joy/Textarea';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/material/FormLabel';
-import Modal from '@mui/material/Modal';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
-import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import { Context } from '../..';
 import $api from '../../http';
-const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 500,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-};
 
 export default function ComplaintsModal() {
     const {store} = React.useContext(Context);
     const {id} = useParams();
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
+    const [layout, setLayout] = React.useState<any>(undefined);
     const [value, setValue] = React.useState('');
     const [text, setText] = React.useState('');
     const [error, setError] = React.useState(false);
-    const [helperText, setHelperText] = React.useState('Choose wisely');
-    const handleClose = () => {
-        setOpen(false)
-        setValue("")
-        setError(false)
-    };
+
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue((event.target as HTMLInputElement).value);
-    setHelperText(' ');
     setError(false);
   };
 
@@ -53,30 +37,52 @@ export default function ComplaintsModal() {
         id_author: store.user.id,
         text: text,
         type: value,
+      }).then((response) => {
+        store.setMsg(true, `${response.data.message}`, "success");
       })
+      .catch((e) => {
+       store.setMsg(true, `${e.response.data.message}`, "error");
+    });
   };
 
     return (
         <div>
-            <button type="button" onClick={handleOpen} className={"ml-3"}>
-                <WarningAmberIcon/>
+            <React.Fragment>
+        <Stack className='ml-1' direction="row" spacing={1}>
+          <Button
+            variant="plain"
+            className='ml-5'
+            color="neutral"
+            onClick={() => {
+              setLayout('center')
+            }}
+          >
+                            <WarningAmberIcon/>
                 Пожаловаться
-            </button>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
+          </Button>
+        </Stack>
+        <Modal
+          open={!!layout}
+          onClose={() => {
+            setLayout(undefined);
+          }}
+        >
+          <ModalDialog layout={layout}>
+            <ModalClose />
+            <DialogTitle>
+            <WarningAmberIcon/>
+                Пожаловаться
+                </DialogTitle>
+            <List
+              sx={{
+                mx: 'calc(-1 * var(--ModalDialog-padding))',
+                px: 'var(--ModalDialog-padding)',
+              }}
             >
-                <Box sx={style}>
-                    <Typography id="modal-modal-title" className={""} variant="h6" component="h2">
-                        Пожаловаться
-                    </Typography>
-                    <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit}>
                         <FormControl sx={{ m: 3 }} error={error} variant="standard">
                             <FormLabel id="demo-error-radios">Выберите тип нарушения</FormLabel>
                             <RadioGroup
-                            aria-labelledby="demo-error-radios"
                             name="quiz"
                             value={value}
                             onChange={handleRadioChange}
@@ -98,14 +104,15 @@ export default function ComplaintsModal() {
                             size="lg"
                             variant="outlined"
                             />
-                            <FormHelperText>{helperText}</FormHelperText>
                             <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined">
                             Отправить жалобу
                             </Button>
                         </FormControl>
                     </form>
-                </Box>
-            </Modal>
+            </List>
+          </ModalDialog>
+        </Modal>
+      </React.Fragment>
         </div>
     );
 }

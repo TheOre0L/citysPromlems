@@ -30,11 +30,9 @@ class UserController {
             if(city.length == 0) city = null;
             if(!validateEmail(email)) return res.status(400).json({message: "Указанное значение не является электронной почтой!"});
             const hashPassword = await bcrypt.hash(password, 3);
-            const activationLink = uuid.v4();
-            const candidate = await bd.query("INSERT INTO person (login, password, name, surname, date_for_regist, email, active_link, city) " +
-             "VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-                [login, hashPassword, name, surname, new Date(), email, activationLink, city])
-            await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`, login);
+            const candidate = await bd.query("INSERT INTO person (login, password, name, surname, date_for_regist, email, city) " +
+             "VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+                [login, hashPassword, name, surname, new Date(), email, city]);
             const tokens = await tokenService.generateTokens({id: candidate.rows[0].id, email: candidate.rows[0].email, role: candidate.rows[0].role});
             const user = candidate.rows[0];
             await tokenService.saveToken(user.id, tokens.refreshToken);
@@ -87,11 +85,38 @@ class UserController {
             return res.json(e)
         }
     }
+    
+    async getActivationLink (req, res) {
+        const {
+            email,
+            login
+        } = req.body;
+        const userDto = await bd.query("SELECT * FROM person WHERE login = $1 AND email = $2", [login, email])
+        const user = userDto.rows[0];
+        if (!user) {
+            return res.status(400).json({message:"Возникла какая-то ошибка, пожалуйста повторите попытку позже!"})
+        } else {
+            function generateRandomSixDigitNumber() {
+                return Math.floor(100000 + Math.random() * 900000);
+            }
+            const activateLink = generateRandomSixDigitNumber()
+            await mailService.sendActivationMail(email, `${activateLink}`, login);
+            await bd.query("UPDATE person set active_link = $1 where login = $2 AND email = $3", 
+            [activateLink, login, email])
+            return res.json({message:"Код активации успешно отправлен!"})
+        }
+
+    }
+
     async activation (req, res){
         try {
-            const user = await bd.query("SELECT * FROM person WHERE active_link = $1", [req.params.activation_link])
+            const {
+                code,
+                login
+            } = req.body;
+            const user = await bd.query("SELECT * FROM person WHERE active_link = $1 AND login = $2", [code, login])
             if (user.rowCount == 0) {
-                return res.status(404).json({message:"Некорректная ссылка активации"})
+                return res.status(404).json({message:"Неверный код активации"})
             }
             await bd.query("UPDATE person set is_activated = $1 where id = $2 RETURNING *",
                 [true, user.rows[0].id])
@@ -169,17 +194,18 @@ class UserController {
     async refresh(req, res) {
         try {
             const {refreshToken} = req.cookies;
-            console.log(refreshToken)
             if (!refreshToken) {
                 throw ApiError.UnauthorizedError();
             }
-            const user = tokenService.validateRefreshToken(refreshToken);
-            if (!user) {
+            const user = await tokenService.validateRefreshToken(refreshToken);
+            const userData = await bd.query("SELECT * FROM person WHERE id = $1", [user.id])
+            const resultUser =  userData.rows[0];
+            if (!resultUser) {
                 throw ApiError.UnauthorizedError();
             }
             const tokens = tokenService.generateTokens({user});
-            await tokenService.saveToken(user.id, tokens.refreshToken);
-            return res.json({...tokens, user})
+            await tokenService.saveToken(resultUser.id, tokens.refreshToken);
+            return res.json({...tokens, user: resultUser})
         } catch (e) {
             console.log(e)
             return res.json(e)

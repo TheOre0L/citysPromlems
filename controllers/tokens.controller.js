@@ -20,10 +20,10 @@ class TokenService {
         }
     }
 
-    validateRefreshToken(token) {
+    async validateRefreshToken(token) {
         try {
-            const userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-            return userData;
+            const tokenData = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+            return tokenData;
         } catch (e) {
             return null;
         }

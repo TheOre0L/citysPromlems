@@ -11,4 +11,5 @@ export interface UserDTO{
     "is_activated": boolean,
     "city": string,
     "role": string,
+    "ban": boolean,
 }

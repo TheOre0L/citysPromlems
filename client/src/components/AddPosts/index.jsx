@@ -1,6 +1,8 @@
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import SaveIcon from '@mui/icons-material/Save';
 import SendIcon from '@mui/icons-material/Send';
+import Switch, { switchClasses } from '@mui/joy/Switch';
+import Typography from '@mui/joy/Typography';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
@@ -26,6 +28,7 @@ const AddPost = observer(() => {
     const [title, setTitle] = useState('')
     const [city, setCity] = useState('')
     const [imageUrl, setimageUrl] = useState('')
+    const [checked, setChecked] = useState(true);
     const inputFileRef = useRef(null)
     const handleChangeFile = async (event) => {
         try{
@@ -51,6 +54,7 @@ const AddPost = observer(() => {
             context,
             city,
             imageUrl,
+            comments: checked
         }).then(res => {
             store.setMsg(true, `Пост успешно обновлен, через 3 секунды вы будете перенаправленны на него!`, "success")
             setTimeout(() => {window.location.replace(`${CLIENT_URL}/post/${id}`)}, 3000)
@@ -66,6 +70,7 @@ const AddPost = observer(() => {
             Number(store.user.id),
             city,
             imageUrl,
+            checked
         )
     }
 
@@ -80,6 +85,7 @@ const AddPost = observer(() => {
                 setContext(res.data.post.context)
                 setCity(res.data.post.city_post)
                 setimageUrl(res.data.post.image)
+                setChecked(res.data.post.comments)
             })
 
         }
@@ -148,6 +154,51 @@ const AddPost = observer(() => {
                 fullWidth />
             <br />
             <SimpleMdeReact className={styles.editor } value={context} onChange={onChange} options={options} />
+            <h2 className = "text-center text-2xl font-mont">Настройки</h2>
+            <div className='text-2xl font-mont absolute'>
+                <Typography component="label" endDecorator={
+                    <Switch
+                        variant={checked ? 'solid' : 'outlined'}
+                        checked={checked}
+                        className = "w-10"
+                        onChange={(event) => setChecked(event.target.checked)}
+                        sx={(theme) => ({
+                            display: 'inherit',
+                            '--Switch-thumbSize': '14px',
+                            '--Switch-thumbShadow': 'inset 0 0 0 1px #dee2e6',
+                            '--Switch-trackWidth': '38px',
+                            '--Switch-trackHeight': '20px',
+                            '--Switch-trackBorderColor': '#dee2e6',
+                            '--Switch-trackBackground': '#e9ecef',
+                            '--Switch-thumbBackground': '#fff',
+                            '&:hover': {
+                            '--Switch-thumbBackground': '#fff',
+                            '--Switch-trackBackground': '#e9ecef',
+                            },
+                            [`&.${switchClasses.checked}`]: {
+                            '--Switch-thumbShadow': 'none',
+                            '--Switch-trackBackground': '#228be6',
+                            '&:hover': {
+                                '--Switch-trackBackground': '#228be6',
+                            },
+                            },
+                            [`&.${switchClasses.disabled}`]: {
+                            '--Switch-thumbColor': '#f8f9fa',
+                            '--Switch-trackBackground': '#e9ecef',
+                            },
+                            [theme.getColorSchemeSelector('dark')]: {
+                            '--Switch-trackBorderColor': 'rgb(55, 58, 64)',
+                            '--Switch-trackBackground': 'rgb(55, 58, 64)',
+                            '--Switch-thumbShadow': 'none',
+                            },
+                        })}
+                        />
+                 }>
+                    Комментарии к публикации
+                </Typography>
+            </div>
+            <br />
+            <br />
             <div className={styles.buttons}>
                 {isEditing ? (
                     <Button size="large" variant="contained" onClick={updatePost}>

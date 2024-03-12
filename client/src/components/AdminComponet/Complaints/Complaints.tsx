@@ -10,18 +10,6 @@ import * as React from 'react';
 import Table from 'react-bootstrap/Table';
 import $api from '../../../http';
 
-const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 500,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-};
-
 export default function ComplaintsModal(props:any) {
     const [layout, setLayout] = React.useState<any>(undefined);
     const [complaints, SetComplaints]= React.useState([])
@@ -81,11 +69,11 @@ export default function ComplaintsModal(props:any) {
                         {toJS(complaints).map((item:any) => (
                             <tr key={item.id_complaints}>
                             <td>{item.id_complaints}</td>
-                            <td><a href = "">Ссылка на пост</a></td>
+                            <td><a href = {`/post/${item.idpost}`}>Ссылка на пост</a></td>
                             <td><a href = {`/user/${item.id_author}`}>Ссылка на автора жалобы</a></td>
                             <td>{item.type}</td>
                             <td>{item.text}</td>
-                            <td>{`${new Date(item.createdat).getTime()}`}</td>
+                            <td>{`${item.createdat}`}</td>
                             </tr>
                         ))}
 

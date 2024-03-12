@@ -1,9 +1,8 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-import {useContext} from "react";
-import {Context} from "../../index";
+import Snackbar from '@mui/material/Snackbar';
+import * as React from 'react';
+import { useContext } from "react";
+import { Context } from "../../index";
 
 export default function CustomizedSnackbars(props: any) {
     const [open, setOpen] = React.useState(props.is_msg);

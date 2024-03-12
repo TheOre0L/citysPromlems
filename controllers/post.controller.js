@@ -11,6 +11,7 @@ class PostController {
                 author_id,
                 city_post,
                 image_url,
+                comments
             } = req.body;
             if (title.length == 0) title = null;
             if (context.length == 0) context = null;
@@ -24,8 +25,8 @@ class PostController {
                     });
                 }
             }
-            const NewPost = await bd.query("INSERT INTO post (title, context, author_id, city_post, image, likes, createdat) VALUES" +
-                "($1, $2, $3, $4, $5, $6, $7) RETURNING *", [title, context, author_id, city_post, image_url, [], new Date()]);
+            const NewPost = await bd.query("INSERT INTO post (title, context, author_id, city_post, image, likes, createdat, comments) VALUES" +
+                "($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *", [title, context, author_id, city_post, image_url, [], new Date(), comments]);
             const updateCreateDate = await bd.query("UPDATE person SET date_create_last_post = $1 WHERE id = $2", [Date.now(), author_id]);
             const post = NewPost.rows[0]
             return res.status(200).json({message: "Пост успешно создан!", post: post});
@@ -57,15 +58,17 @@ class PostController {
                 context,
                 city,
                 imageUrl,
+                comments
             } = req.body;
             if (title.length == 0) title = null;
             if (context.length == 0) context = null;
             if (imageUrl.length == 0) imageUrl = "/uploads/noimage.png";
-            const UpdatePost = await bd.query("UPDATE post SET title = $1, context = $2, image = $3, city_post = $4 WHERE idPost = $5 RETURNING *", [
+            const UpdatePost = await bd.query("UPDATE post SET title = $1, context = $2, image = $3, city_post = $4, comments = $5 WHERE idPost = $6 RETURNING *", [
                 title,
                 context,
                 imageUrl,
                 city,
+                comments,
                 req.params.id
             ]);
             return res.status(200).json({post: UpdatePost.rows[0]})
