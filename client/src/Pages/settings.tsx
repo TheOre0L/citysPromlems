@@ -10,7 +10,7 @@ import TextField from "@mui/material/TextField";
 import { observer } from "mobx-react-lite";
 import { useContext, useEffect, useRef, useState } from 'react';
 import { hot } from "react-hot-loader/root";
-import styles from '../components/AddPosts/AddPost.module.scss';
+import styles from './AddPosts/AddPost.module.scss';
 import { AuthHeader } from "../components/AuthHeader";
 import { Header } from "../components/Header";
 import stylesL from "../components/Login.module.css";

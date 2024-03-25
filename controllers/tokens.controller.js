@@ -30,24 +30,23 @@ class TokenService {
     }
 
     async saveToken(userId, refreshToken) {
-        const tokenData = await bd.query("SELECT * FROM token WHERE user_id = $1", [userId])
+        const tokenData = await bd.query("SELECT * FROM person WHERE id = $1", [userId])
         console.log(tokenData)
-        if (tokenData.rowCount > 0) {
-            await bd.query("DELETE FROM token WHERE user_id = $1", [userId])
-            const token = await bd.query("INSERT INTO token (refreshtoken, user_id) VALUES ($1, $2)", [refreshToken, userId])
+        if (tokenData.rows[0].refreshtoken != null) {
+            const token = await bd.query("UPDATE person SET refreshtoken = $1 WHERE id = $2", [refreshToken, userId])
             return token;
         }
-        const token = await bd.query("INSERT INTO token (refreshtoken, user_id) VALUES ($1, $2)", [refreshToken, userId])
+        const token = await bd.query("UPDATE person SET refreshtoken = $1 WHERE id = $2", [refreshToken, userId])
         return token;
     }
 
     async removeToken(userId) {
-        const tokenData = await bd.query("DELETE FROM token WHERE user_id = $1", [userId])
+        const tokenData = await bd.query("UPDATE person SET refreshtoken = NULL WHERE id = $2", [userId])
         return tokenData;
     }
 
     async findToken(refreshToken) {
-        const tokenData = await bd.query("SELECT * FROM token WHERE refreshtoken = $1", [refreshToken])
+        const tokenData = await bd.query("SELECT * FROM person WHERE refreshtoken = $1", [refreshToken])
         return tokenData;
     }
 }

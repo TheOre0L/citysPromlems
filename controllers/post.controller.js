@@ -1,7 +1,5 @@
 const bd = require('../bd');
 const humanize = require("humanize-duration");
-const fileUpload = require("express-fileupload");
-const uuid = require("uuid");
 class PostController {
     async addPost(req, res) {
         try {

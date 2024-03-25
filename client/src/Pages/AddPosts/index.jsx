@@ -13,13 +13,13 @@ import { hot } from "react-hot-loader/root";
 import { useParams } from "react-router-dom";
 import { SimpleMdeReact } from 'react-simplemde-editor';
 import { CLIENT_URL } from "../../App";
+import { AuthHeader } from "../../components/AuthHeader";
+import Errors from "../../components/Errors/errors";
+import { Header } from "../../components/Header";
+import CustomizedSnackbars from "../../components/Message/notification_msg";
+import PreviewPost from "../../components/previewPost/previewPost";
 import { $api, API_URL } from "../../http/index";
 import { Context } from "../../index";
-import { AuthHeader } from "../AuthHeader";
-import Errors from "../Errors/errors";
-import { Header } from "../Header";
-import CustomizedSnackbars from "../Message/notification_msg";
-import PreviewPost from "../previewPost/previewPost";
 import styles from './AddPost.module.scss';
 const AddPost = observer(() => {
     const {id} = useParams();

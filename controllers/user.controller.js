@@ -179,7 +179,7 @@ class UserController {
             if (!refreshToken) {
                 throw ApiError.UnauthorizedError();
             }
-            const userData = tokenService.validateRefreshToken(refreshToken);
+            const userData = await tokenService.validateRefreshToken(refreshToken);
             if (!userData) {
                 throw ApiError.UnauthorizedError();
             }
