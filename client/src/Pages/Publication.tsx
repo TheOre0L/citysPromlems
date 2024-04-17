@@ -167,7 +167,7 @@ const Publication : FC = observer(() => {
                         }}
                         viewCount={item.viewcount}
                         commentsCount={item.commentcount}
-                        isEditable={store.user.role == "ADMIN" || item.author_id == store.user.id ? true : false}
+                        isEditable={false}
                         store={store} children={undefined} isFullPost={false} isLoading={false} isLiked={false} isPreview={false}/>
                         ))}
                 </Grid>

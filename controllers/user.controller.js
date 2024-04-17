@@ -137,7 +137,7 @@ class UserController {
         try{
 
             const id = req.params.id;
-            const userDto = await bd.query("SELECT p.id, p.name, p.surname, p.city, p.is_activated, p.avatarurl, p.role, p.ban, COUNT(DISTINCT post.idpost) AS total_posts, (SELECT COUNT(*) FROM comment WHERE comment.author_com_id = p.id) AS total_comments FROM person p LEFT JOIN post ON p.id = post.author_id WHERE p.id = $1 GROUP BY p.id, p.name, p.surname, p.city, p.is_activated, p.avatarurl, p.role;", [id])
+            const userDto = await bd.query("SELECT p.id, p.email, p.name, p.surname, p.city, p.is_activated, p.avatarurl, p.role, p.ban, COUNT(DISTINCT post.idpost) AS total_posts, (SELECT COUNT(*) FROM comment WHERE comment.author_com_id = p.id) AS total_comments FROM person p LEFT JOIN post ON p.id = post.author_id WHERE p.id = $1 GROUP BY p.id, p.name, p.surname, p.city, p.is_activated, p.avatarurl, p.role;", [id])
             const user = userDto.rows[0];
             if(user){
                 return res.json({message:"Пользователь найден!", user})
@@ -156,8 +156,7 @@ class UserController {
                 name,
                 image,
                 surname} = req.body;
-            const updateUser = await bd.query("UPDATE person set name = $1, surname = $2, avatarurl = $3 where id = $4 RETURNING *",
-                [name, surname, image, id])
+ 
             res.json(updateUser.rows[0])
         } catch (e) {
             console.log(e)
@@ -207,7 +206,7 @@ class UserController {
             await tokenService.saveToken(resultUser.id, tokens.refreshToken);
             return res.json({...tokens, user: resultUser})
         } catch (e) {
-            console.log(e)
+            console.log("!!!!!!!!!!!!!!!!!!!!!!" + e)
             return res.json(e)
         }
     }

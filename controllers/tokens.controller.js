@@ -41,7 +41,7 @@ class TokenService {
     }
 
     async removeToken(userId) {
-        const tokenData = await bd.query("UPDATE person SET refreshtoken = NULL WHERE id = $2", [userId])
+        const tokenData = await bd.query("UPDATE person SET refreshtoken = NULL WHERE id = $1", [userId])
         return tokenData;
     }
 

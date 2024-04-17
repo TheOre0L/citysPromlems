@@ -109,10 +109,10 @@ export default class Store {
         this.setLoading(true);
         try {
             const response = await AuthService.logout();
-            await localStorage.removeItem('token');
-            await localStorage.removeItem('userId');
-            await this.setAuth(false);
-            await this.setUser({} as UserDTO);
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');         
+            this.setAuth(false);
+            this.setUser({} as UserDTO);
         } catch (e: any) {
             console.error(e.response.data.message);
             this.setError(e.response.data.message, true);

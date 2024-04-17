@@ -76,6 +76,7 @@ const FullPost = observer(() => {
         viewCount={data.post.viewcount}
         commentsCount={data.post.count}
         isLiked={data.isLiked}
+        isEditable={store.user.role == "ADMIN" || data.post.author_id == store.user.id ? true : false}
         isFullPost
       >
         <Markdown children={data.post.context}/>
